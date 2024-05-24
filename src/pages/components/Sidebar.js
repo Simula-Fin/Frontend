@@ -9,7 +9,7 @@ const Sidebar = () => {
 
     return (
         <div className="w-64 bg-gray-800 text-white flex flex-col">
-            <div className="px-4 py-6 text-lg font-bold flex items-center">
+            <div className="px-4 py-4 text-lg font-bold flex items-center">
                 <img src={simulaFinLogo} alt="Simula-Fin Logo" className="h-8 mr-2" />
                 Simula-Fin
             </div>
