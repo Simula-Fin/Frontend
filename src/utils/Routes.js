@@ -2,7 +2,7 @@
 import React from 'react';
 import TestPage from '../pages/dash/teste';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom'
-import App from '../pages/login/App';
+import App from '../pages/loanSimulator/App';
 
 const MyRoutes = () => {
   return (
