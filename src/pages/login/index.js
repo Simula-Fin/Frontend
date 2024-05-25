@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import logoImage from './logoBank.jpg'; 
 import './index.css';
 import { useAuth } from '../../utils/AuthContext'
-import { axiosInstance, authAxiosInstance } from '../../utils/AxiosConfig'; 
+import { authAxiosInstance } from '../../utils/AxiosConfig'; 
 import { Navigate } from 'react-router-dom'; 
 
 const Login = () => {

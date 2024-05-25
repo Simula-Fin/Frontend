@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { axiosInstance, authAxiosInstance } from '../../../utils/AxiosConfig'
+import { authAxiosInstance } from '../../../utils/AxiosConfig'
 
 const LoanSimulator = () => {
   const [loanAmount, setLoanAmount] = useState('');

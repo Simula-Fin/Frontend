@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { authAxiosInstance } from '../../../utils/AxiosConfig'
 
 const ConsortiumSimulator = () => {
   const [consortiumValue, setConsortiumValue] = useState('');
@@ -9,7 +10,29 @@ const ConsortiumSimulator = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Lógica de simulação de consórcio aqui
+    consortiumSimulation();
+  };
+
+
+  const consortiumSimulation = async () => {
+    try {
+
+      const data = {
+        amount: consortiumValue,
+        duration_months: installments,
+        tax: interestRate
+      };
+
+      console.log('Response', data)
+
+      const response = await authAxiosInstance.post(
+        '/simulations/consortium-simulation/', data
+      );
+      console.log('Response', response.data)
+      
+    } catch (error) {
+      console.error('Erro ao fazer simulação:', error);
+    }
   };
 
   return (
