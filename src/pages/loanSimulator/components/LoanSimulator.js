@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { axiosInstance, authAxiosInstance } from '../../../utils/AxiosConfig'
 
 const LoanSimulator = () => {
   const [loanAmount, setLoanAmount] = useState('');
@@ -9,7 +10,29 @@ const LoanSimulator = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Lógica de simulação de empréstimo aqui
+    loanSimulation()
+  };
+
+
+  const loanSimulation = async () => {
+    try {
+
+      const data = {
+        amount: loanAmount,
+        duration_months: installments,
+        tax: interestRate
+      };
+
+      console.log('Response', data)
+
+      const response = await authAxiosInstance.post(
+        '/simulations/loan-simulation/', data
+      );
+      console.log('Response', response.data)
+      
+    } catch (error) {
+      console.error('Erro ao fazer simulação:', error);
+    }
   };
 
   return (

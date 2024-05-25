@@ -4,7 +4,6 @@ import './index.css';
 import { useAuth } from '../../utils/AuthContext'
 import { axiosInstance, authAxiosInstance } from '../../utils/AxiosConfig'; 
 import { Navigate } from 'react-router-dom'; 
-import axios from 'axios';
 
 const Login = () => {
   const [email, setEmail] = useState('');
