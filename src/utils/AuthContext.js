@@ -9,11 +9,9 @@ export const AuthProvider = ({ children }) => {
   });
 
   useEffect(() => {
-    if (isAuthenticated) {
-      localStorage.setItem('token', 'seu_token_de_autenticacao');
-    } else {
+    if (!isAuthenticated) {
       localStorage.removeItem('token');
-    }
+    } 
   }, [isAuthenticated]);
 
   const authLogin = () => {

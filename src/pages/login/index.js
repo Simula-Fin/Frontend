@@ -1,25 +1,44 @@
 import React, { useState } from 'react';
-import logoImage from './logoBank.jpg'; // Importa a imagem local
+import logoImage from './logoBank.jpg'; 
 import './index.css';
 import { useAuth } from '../../utils/AuthContext'
-import { Navigate } from 'react-router-dom'; // Importa o componente Navigate
+import { axiosInstance, authAxiosInstance } from '../../utils/AxiosConfig'; 
+import { Navigate } from 'react-router-dom'; 
+import axios from 'axios';
 
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const { authLogin, authLogout, isAuthenticated } = useAuth();
+  const { authLogin, isAuthenticated } = useAuth();
 
   const handleLogin = (e) => {
     e.preventDefault();
     login(email, password);
   };
 
-  const login = (email, password) => {
-    authLogin();
+  const login = async (email, password) => {
+    try {
+      // const response = await authAxiosInstance.post(
+      //   '/auth/access-token', {
+      //   username: email,
+      //   password: password
+      // });
+
+      const response = await authAxiosInstance.post(
+        '/auth/access-token',
+        `grant_type=&username=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}&scope=&client_id=&client_secret=`
+      );
+
+      const token = response.data.access_token;
+      localStorage.setItem('token', token);
+      authLogin(); 
+    } catch (error) {
+      console.error('Erro ao fazer login:', error);
+    }
   };
 
   if (isAuthenticated) {
-    return <Navigate to="/consortium" replace />;
+    return <Navigate to="/" replace />;
   }
 
   return (
