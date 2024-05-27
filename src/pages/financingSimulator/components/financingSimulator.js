@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { authAxiosInstance } from '../../../utils/AxiosConfig'
+import ReactTooltip from 'react-tooltip';
+import { authAxiosInstance } from '../../../utils/AxiosConfig';
 
 const FinancingSimulator = () => {
   const [financingValue, setFinancingValue] = useState('');
@@ -15,19 +16,18 @@ const FinancingSimulator = () => {
 
   const financingSimulation = async () => {
     try {
-
       const data = {
         amount: financingValue,
         duration_months: installments,
         tax: interestRate
       };
 
-      console.log('Response', data)
+      console.log('Response', data);
 
       const response = await authAxiosInstance.post(
         '/simulations/financing-simulation/', data
       );
-      console.log('Response', response.data)
+      console.log('Response', response.data);
       
     } catch (error) {
       console.error('Erro ao fazer simulação:', error);
@@ -39,7 +39,7 @@ const FinancingSimulator = () => {
       <h2 className="text-2xl font-bold mb-4">Simulador de Financiamentos</h2>
       <form onSubmit={handleSubmit}>
         <div className="mb-4">
-          <label className="block text-gray-700 mb-2">Valor do financiamento:</label>
+          <label className="block text-gray-700 mb-2" data-tip="Insira o valor total do financiamento desejado.">Valor do financiamento:</label>
           <input
             type="number"
             value={financingValue}
@@ -47,9 +47,10 @@ const FinancingSimulator = () => {
             className="w-full p-2 border border-gray-300 rounded-md"
             placeholder="0,00"
           />
+          <ReactTooltip place="right" type="dark" effect="solid" />
         </div>
         <div className="mb-4">
-          <label className="block text-gray-700 mb-2">Número de parcelas:</label>
+          <label className="block text-gray-700 mb-2" data-tip="Digite o número de parcelas que deseja pagar.">Número de parcelas:</label>
           <input
             type="number"
             value={installments}
@@ -57,9 +58,10 @@ const FinancingSimulator = () => {
             className="w-full p-2 border border-gray-300 rounded-md"
             placeholder="0"
           />
+          <ReactTooltip place="right" type="dark" effect="solid" />
         </div>
         <div className="mb-4">
-          <label className="block text-gray-700 mb-2">Tipo de Amortização:</label>
+          <label className="block text-gray-700 mb-2" data-tip="Escolha o tipo de amortização desejado. As parcelas Fixas (Tabela Price) são muito comuns nos financiamentos pessoais.">Tipo de Amortização:</label>
           <select
             value={amortizationType}
             onChange={(e) => setAmortizationType(e.target.value)}
@@ -69,9 +71,10 @@ const FinancingSimulator = () => {
             <option value="SAC">SAC</option>
             <option value="SACRE">SACRE</option>
           </select>
+          <ReactTooltip place="right" type="dark" effect="solid" />
         </div>
         <div className="mb-4">
-          <label className="block text-gray-700 mb-2">Taxa de administração:</label>
+          <label className="block text-gray-700 mb-2" data-tip="Informe a taxa de administração do financiamento.">Taxa de administração:</label>
           <input
             type="text"
             value={interestRate}
@@ -86,6 +89,7 @@ const FinancingSimulator = () => {
             <option value="ao mês">ao mês</option>
             <option value="ao ano">ao ano</option>
           </select>
+          <ReactTooltip place="right" type="dark" effect="solid" />
         </div>
         <button
           type="submit"

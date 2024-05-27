@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { authAxiosInstance as axios } from '../../../utils/AxiosConfig'
+import ReactTooltip from 'react-tooltip';
+import { authAxiosInstance as axios } from '../../../utils/AxiosConfig';
 
 const LoanSimulator = () => {
   const [loanAmount, setLoanAmount] = useState('');
@@ -19,9 +20,9 @@ const LoanSimulator = () => {
     setLoading(true);
     try {
       let calculation_method = '';
-      if (amortizationType.toLocaleLowerCase().includes('price')) {
+      if (amortizationType.toLowerCase().includes('price')) {
         calculation_method = 'price';
-      } else if (amortizationType.toLocaleLowerCase().includes('sac')) {
+      } else if (amortizationType.toLowerCase().includes('sac')) {
         calculation_method = 'sac';
       }
 
@@ -70,7 +71,7 @@ const LoanSimulator = () => {
       <h2 className="text-2xl font-bold mb-4">Simulador de Empréstimos</h2>
       <form onSubmit={handleSubmit}>
         <div className="mb-4">
-          <label className="block text-gray-700 mb-2">Valor do empréstimo:</label>
+          <label className="block text-gray-700 mb-2" data-tip="Insira o valor total do empréstimo desejado.">Valor do empréstimo:</label>
           <input
             type="number"
             value={loanAmount}
@@ -78,9 +79,10 @@ const LoanSimulator = () => {
             className="w-full p-2 border border-gray-300 rounded-md"
             placeholder="0,00"
           />
+          <ReactTooltip place="right" type="dark" effect="solid" />
         </div>
         <div className="mb-4">
-          <label className="block text-gray-700 mb-2">Número de parcelas:</label>
+          <label className="block text-gray-700 mb-2" data-tip="Digite o número de parcelas que deseja pagar.">Número de parcelas:</label>
           <input
             type="number"
             value={installments}
@@ -88,9 +90,10 @@ const LoanSimulator = () => {
             className="w-full p-2 border border-gray-300 rounded-md"
             placeholder="0"
           />
+          <ReactTooltip place="right" type="dark" effect="solid" />
         </div>
         <div className="mb-4">
-          <label className="block text-gray-700 mb-2">Tipo de Amortização:</label>
+          <label className="block text-gray-700 mb-2" data-tip="Escolha o tipo de amortização desejado. As parcelas Fixas (Tabela Price) são muito comuns nos empréstimos pessoais.">Tipo de Amortização:</label>
           <select
             value={amortizationType}
             onChange={(e) => setAmortizationType(e.target.value)}
@@ -99,9 +102,10 @@ const LoanSimulator = () => {
             <option value="Tabela Price">Tabela Price</option>
             <option value="SAC">SAC</option>
           </select>
+          <ReactTooltip place="right" type="dark" effect="solid" />
         </div>
         <div className="mb-4">
-          <label className="block text-gray-700 mb-2">Taxa de juros:</label>
+          <label className="block text-gray-700 mb-2" data-tip="Informe a taxa de juros do empréstimo.">Taxa de juros:</label>
           <input
             type="text"
             value={interestRate}
@@ -116,6 +120,7 @@ const LoanSimulator = () => {
             <option value="ao mês">ao mês</option>
             <option disabled value="ao ano">ao ano</option>
           </select>
+          <ReactTooltip place="right" type="dark" effect="solid" />
         </div>
         <button
           type="submit"

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { authAxiosInstance } from '../../../utils/AxiosConfig'
+import ReactTooltip from 'react-tooltip'; // Certifique-se de importar corretamente o componente
+import { authAxiosInstance } from '../../../utils/AxiosConfig';
 
 const ConsortiumSimulator = () => {
   const [consortiumValue, setConsortiumValue] = useState('');
@@ -13,22 +14,20 @@ const ConsortiumSimulator = () => {
     consortiumSimulation();
   };
 
-
   const consortiumSimulation = async () => {
     try {
-
       const data = {
         amount: consortiumValue,
         duration_months: installments,
         tax: interestRate
       };
 
-      console.log('Response', data)
+      console.log('Response', data);
 
       const response = await authAxiosInstance.post(
         '/simulations/consortium-simulation/', data
       );
-      console.log('Response', response.data)
+      console.log('Response', response.data);
       
     } catch (error) {
       console.error('Erro ao fazer simulação:', error);
@@ -40,7 +39,7 @@ const ConsortiumSimulator = () => {
       <h2 className="text-2xl font-bold mb-4">Simulador de Consórcios</h2>
       <form onSubmit={handleSubmit}>
         <div className="mb-4">
-          <label className="block text-gray-700 mb-2">Valor do consórcio:</label>
+          <label className="block text-gray-700 mb-2" data-tip="Insira o valor total do consórcio desejado.">Valor do consórcio:</label>
           <input
             type="number"
             value={consortiumValue}
@@ -48,9 +47,10 @@ const ConsortiumSimulator = () => {
             className="w-full p-2 border border-gray-300 rounded-md"
             placeholder="0,00"
           />
+          <ReactTooltip place="right" type="dark" effect="solid" />
         </div>
         <div className="mb-4">
-          <label className="block text-gray-700 mb-2">Número de parcelas:</label>
+          <label className="block text-gray-700 mb-2" data-tip="Digite o número de parcelas que deseja pagar.">Número de parcelas:</label>
           <input
             type="number"
             value={installments}
@@ -58,9 +58,10 @@ const ConsortiumSimulator = () => {
             className="w-full p-2 border border-gray-300 rounded-md"
             placeholder="0"
           />
+          <ReactTooltip place="right" type="dark" effect="solid" />
         </div>
         <div className="mb-4">
-          <label className="block text-gray-700 mb-2">Tipo de Amortização:</label>
+          <label className="block text-gray-700 mb-2" data-tip="Escolha o tipo de amortização desejado. As parcelas Fixas (Tabela Price) são muito comuns nos empréstimos pessoais.">Tipo de Amortização:</label>
           <select
             value={amortizationType}
             onChange={(e) => setAmortizationType(e.target.value)}
@@ -70,9 +71,10 @@ const ConsortiumSimulator = () => {
             <option value="SAC">SAC</option>
             <option value="SACRE">SACRE</option>
           </select>
+          <ReactTooltip place="right" type="dark" effect="solid" />
         </div>
         <div className="mb-4">
-          <label className="block text-gray-700 mb-2">Taxa de administração:</label>
+          <label className="block text-gray-700 mb-2" data-tip="Informe a taxa de administração do consórcio.">Taxa de administração:</label>
           <input
             type="text"
             value={interestRate}
@@ -87,6 +89,7 @@ const ConsortiumSimulator = () => {
             <option value="ao mês">ao mês</option>
             <option value="ao ano">ao ano</option>
           </select>
+          <ReactTooltip place="right" type="dark" effect="solid" />
         </div>
         <button
           type="submit"
