@@ -5,6 +5,7 @@ import LoanSimulatorPage from '../pages/loanSimulator/loanPage';
 import LoginPage from '../pages/login';
 import ConsortiumPage from '../pages/consortiumSimulator/ConsortiumPage';
 import FinancingPage from '../pages/financingSimulator/financingPage';
+import LoanRequestPage from '../pages/loanRequest/loanRequestPage';
 import MainLayout from '../utils/MainLayout';
 import { useAuth } from './AuthContext'; // Importe o hook useAuth
 
@@ -33,7 +34,7 @@ const MyRoutes = () => {
                 <Route path="/loan-simulator" element={<Private Item={LoanSimulatorPage} />} />
                 <Route path="/consortium" element={<Private Item={ConsortiumPage} />} />
                 <Route path="/financing" element={<Private Item={FinancingPage} />} />
-                {/* Adicione outras rotas aqui */}
+                <Route path="/loan-request" element={<Private Item={LoanRequestPage} />} />
               </Routes>
             </MainLayout>
           }

@@ -28,7 +28,7 @@ const Sidebar = () => {
                     <Link to="/" className="block px-4 py-2 hover:bg-gray-700 flex items-center">
                         <FaHome className="mr-2" /> Boas vindas
                     </Link>
-                    <Link to="/" className="block px-4 py-2 hover:bg-gray-700 flex items-center">
+                    <Link to="/loan-request" className="block px-4 py-2 hover:bg-gray-700 flex items-center">
                         <FaDollarSign className="mr-2" /> Solicitação de Empréstimo
                     </Link>
                     <div>
