@@ -8,6 +8,8 @@ import FinancingPage from '../pages/financingSimulator/financingPage';
 import LoanRequestPage from '../pages/loanRequest/loanRequestPage';
 import MainLayout from '../utils/MainLayout';
 import { useAuth } from './AuthContext'; // Importe o hook useAuth
+import Register from '../pages/register';
+import Profile from '../pages/profile';
 
 const EmptyPage = () => <div className="p-6">Bem-vindo ao Simula-Fin. Use a barra lateral para navegar.</div>;
 
@@ -23,6 +25,7 @@ const MyRoutes = () => {
   return (
     <Router>
       <Routes>
+        <Route path="/register" element={<Register />} />
         <Route path="/login" element={<LoginPage />} />
         <Route
           path="*"
@@ -35,6 +38,7 @@ const MyRoutes = () => {
                 <Route path="/consortium" element={<Private Item={ConsortiumPage} />} />
                 <Route path="/financing" element={<Private Item={FinancingPage} />} />
                 <Route path="/loan-request" element={<Private Item={LoanRequestPage} />} />
+                <Route path="/profile" element={<Private Item={Profile} />} />
               </Routes>
             </MainLayout>
           }
