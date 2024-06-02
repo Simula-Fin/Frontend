@@ -10,8 +10,7 @@ import MainLayout from '../utils/MainLayout';
 import { useAuth } from './AuthContext'; // Importe o hook useAuth
 import Register from '../pages/register';
 import Profile from '../pages/profile';
-
-const EmptyPage = () => <div className="p-6">Bem-vindo ao Simula-Fin. Use a barra lateral para navegar.</div>;
+import HomePage from '../pages/home/homePage';
 
 const Private = ({ Item }) => {
   const { isAuthenticated } = useAuth();
@@ -32,7 +31,7 @@ const MyRoutes = () => {
           element={
             <MainLayout>
               <Routes>
-                <Route path="/" element={<Private Item={EmptyPage} />} />
+                <Route path="/" element={<Private Item={HomePage} />} />
                 <Route path="/teste" element={<Private Item={TestPage} />} />
                 <Route path="/loan-simulator" element={<Private Item={LoanSimulatorPage} />} />
                 <Route path="/consortium" element={<Private Item={ConsortiumPage} />} />
