@@ -16,13 +16,12 @@ const Sidebar = () => {
         setLogoutModalOpen(false);
     };
 
-
     return (
         <div className="w-64 bg-gray-800 text-white flex flex-col">
-            <div className="px-4 py-4 text-lg font-bold flex items-center">
+            <Link to="/" className="px-4 py-4 text-lg font-bold flex items-center">
                 <img src={simulaFinLogo} alt="Simula-Fin Logo" className="h-8 mr-2" />
                 Simula-Fin
-            </div>
+            </Link>
             <div className="flex-1">
                 <nav>
                     <Link to="/" className="block px-4 py-2 hover:bg-gray-700 flex items-center">
