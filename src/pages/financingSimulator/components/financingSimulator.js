@@ -24,8 +24,6 @@ const FinancingSimulator = () => {
         calculation_method = 'price';
       } else if (amortizationType.toLowerCase().includes('sac')) {
         calculation_method = 'sac';
-      } else if (amortizationType.toLowerCase().includes('sacre')) {
-        calculation_method = 'sacre';
       }
 
       const data = {
@@ -105,7 +103,6 @@ const FinancingSimulator = () => {
           >
             <option value="Tabela Price">Tabela Price</option>
             <option value="SAC">SAC</option>
-            <option value="SACRE">SACRE</option>
           </select>
           <ReactTooltip place="right" type="dark" effect="solid" />
         </div>
