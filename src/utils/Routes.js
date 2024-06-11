@@ -6,8 +6,9 @@ import LoginPage from '../pages/login';
 import ConsortiumPage from '../pages/consortiumSimulator/ConsortiumPage';
 import FinancingPage from '../pages/financingSimulator/financingPage';
 import LoanRequestPage from '../pages/loanRequest/loanRequestPage';
+import LoanOpportunitiesPage from '../pages/loanOportunities/loanOportunitiesPage'; // Corrigido o caminho da nova página
 import MainLayout from '../utils/MainLayout';
-import { useAuth } from './AuthContext'; // Importe o hook useAuth
+import { useAuth } from './AuthContext';
 import Register from '../pages/register';
 import Profile from '../pages/profile';
 import HomePage from '../pages/home/homePage';
@@ -15,9 +16,7 @@ import HomePage from '../pages/home/homePage';
 const Private = ({ Item }) => {
   const { isAuthenticated } = useAuth();
 
-  console.log("Main", isAuthenticated)
-
-  return isAuthenticated ? <Item /> : <Navigate to="/login"/>;
+  return isAuthenticated ? <Item /> : <Navigate to="/login" />;
 };
 
 const MyRoutes = () => {
@@ -37,6 +36,7 @@ const MyRoutes = () => {
                 <Route path="/consortium" element={<Private Item={ConsortiumPage} />} />
                 <Route path="/financing" element={<Private Item={FinancingPage} />} />
                 <Route path="/loan-request" element={<Private Item={LoanRequestPage} />} />
+                <Route path="/loan-opportunities" element={<Private Item={LoanOpportunitiesPage} />} /> {/* Nova rota */}
                 <Route path="/profile" element={<Private Item={Profile} />} />
               </Routes>
             </MainLayout>

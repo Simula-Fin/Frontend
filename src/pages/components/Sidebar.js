@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { FaChevronDown, FaChevronRight, FaHome, FaMoneyCheckAlt, FaHandHoldingUsd, FaCogs, FaUser, FaListUl, FaDollarSign, FaSignOutAlt } from 'react-icons/fa';
+import { FaChevronDown, FaChevronRight, FaHome, FaMoneyCheckAlt, FaHandHoldingUsd, FaCogs, FaUser, FaListUl, FaDollarSign, FaSignOutAlt, FaChartLine } from 'react-icons/fa';
 import simulaFinLogo from '../../assets/logoBank.jpg';
 import { useAuth } from '../../utils/AuthContext'
 
 const Sidebar = () => {
     const [configOpen, setConfigOpen] = useState(false);
     const [simulationOpen, setSimulationOpen] = useState(false);
+    const [loanOpen, setLoanOpen] = useState(false); // Novo estado para a seção de Empréstimos
     const [logoutModalOpen, setLogoutModalOpen] = useState(false);
     const { authLogout } = useAuth();
 
@@ -27,9 +28,22 @@ const Sidebar = () => {
                     <Link to="/" className="block px-4 py-2 hover:bg-gray-700 flex items-center">
                         <FaHome className="mr-2" /> Boas vindas
                     </Link>
-                    <Link to="/loan-request" className="block px-4 py-2 hover:bg-gray-700 flex items-center">
-                        <FaDollarSign className="mr-2" /> Solicitação de Empréstimo
-                    </Link>
+                    <div>
+                        <button onClick={() => setLoanOpen(!loanOpen)} className="block px-4 py-2 hover:bg-gray-700 w-full text-left flex items-center justify-between">
+                            <span className="flex items-center"><FaDollarSign className="mr-2" /> Empréstimos</span>
+                            {loanOpen ? <FaChevronDown /> : <FaChevronRight />}
+                        </button>
+                        {loanOpen && (
+                            <div className="pl-4">
+                                <Link to="/loan-request" className="block px-4 py-2 hover:bg-gray-700 flex items-center">
+                                    <FaHandHoldingUsd className="mr-2" /> Solicitação de Empréstimo
+                                </Link>
+                                <Link to="/loan-opportunities" className="block px-4 py-2 hover:bg-gray-700 flex items-center">
+                                    <FaChartLine className="mr-2" /> Oportunidades de Empréstimo
+                                </Link>
+                            </div>
+                        )}
+                    </div>
                     <div>
                         <button onClick={() => setSimulationOpen(!simulationOpen)} className="block px-4 py-2 hover:bg-gray-700 w-full text-left flex items-center justify-between">
                             <span className="flex items-center"><FaListUl className="mr-2" /> Simulações</span>
