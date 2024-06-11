@@ -37,11 +37,11 @@ const LoanOpportunities = () => {
             <table className="min-w-full bg-white">
                 <thead>
                     <tr>
-                        <th className="py-2 px-4 border-b">Nome</th>
-                        <th className="py-2 px-4 border-b">Duração (Meses)</th>
-                        <th className="py-2 px-4 border-b">Valor</th>
-                        <th className="py-2 px-4 border-b">Taxa de Juros</th>
-                        <th className="py-2 px-4 border-b">Risco</th>
+                        <th className="py-2 px-4 border-b text-left">Nome</th>
+                        <th className="py-2 px-4 border-b text-center">Duração (Meses)</th>
+                        <th className="py-2 px-4 border-b text-center">Valor</th>
+                        <th className="py-2 px-4 border-b text-center">Taxa de Juros</th>
+                        <th className="py-2 px-4 border-b text-center">Risco</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -51,10 +51,10 @@ const LoanOpportunities = () => {
                                 <img src={logoBank} alt={opportunity.name} className="h-10 w-10 mr-2 rounded-full" />
                                 {opportunity.name}
                             </td>
-                            <td className="py-2 px-4 border-b">{opportunity.duration}</td>
-                            <td className="py-2 px-4 border-b">{opportunity.amount}</td>
-                            <td className="py-2 px-4 border-b">{opportunity.interestRate}</td>
-                            <td className={`py-2 px-4 border-b ${getRiskColor(opportunity.risk)}`}>
+                            <td className="py-2 px-4 border-b text-center">{opportunity.duration}</td>
+                            <td className="py-2 px-4 border-b text-center">{opportunity.amount}</td>
+                            <td className="py-2 px-4 border-b text-center">{opportunity.interestRate}</td>
+                            <td className={`py-2 px-4 border-b text-center ${getRiskColor(opportunity.risk)}`}>
                                 {opportunity.risk.charAt(0).toUpperCase() + opportunity.risk.slice(1)}
                             </td>
                         </tr>
