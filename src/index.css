@@ -63,3 +63,8 @@ code {
 .slider::-moz-range-track {
   height: 8px;
 }
+
+
+.hover-title:hover .font-bold {
+  color: white;
+}
