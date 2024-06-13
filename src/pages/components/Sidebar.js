@@ -30,7 +30,7 @@ const Sidebar = () => {
                     </Link>
                     <div>
                         <button onClick={() => setLoanOpen(!loanOpen)} className="block px-4 py-2 hover:bg-gray-700 w-full text-left flex items-center justify-between">
-                            <span className="flex items-center"><FaDollarSign className="mr-2" /> Empréstimos</span>
+                            <span className="flex items-center"><FaDollarSign className="mr-2" />Rede de Empréstimos</span>
                             {loanOpen ? <FaChevronDown /> : <FaChevronRight />}
                         </button>
                         {loanOpen && (
