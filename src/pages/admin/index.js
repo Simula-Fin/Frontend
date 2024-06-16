@@ -2,9 +2,8 @@ import React from "react";
 import { useState } from "react";
 import { FaEllipsisV } from "react-icons/fa";
 
-import { ToastContainer, toast } from 'react-toastify';
+import { toast } from 'react-toastify';
 import Graphics from "../../pages/components/Graphics";
-import Chart from "../../pages/components/Chart";
 
 import perfil2 from '../../assets/img2.png'; 
 import perfil3 from '../../assets/senhora.png';

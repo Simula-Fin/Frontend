@@ -7,7 +7,7 @@ import perfil3 from '../../../assets/senhora.png';
 import perfil4 from '../../../assets/mulher3.png';
 import perfil5 from '../../../assets/images4.png'; 
 import logo from '../../../assets/logoBank.jpg'; 
-import { ToastContainer, toast } from 'react-toastify';
+import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Graphics from "../../../pages/components/Graphics";
 import Chart from "../../../pages/components/Chart";
@@ -40,10 +40,6 @@ const LoanOpportunities = () => {
         }
     };
 
-    const confirmInvestmentToast = () => {
-        toast.success('Seu investimento passará por análise. Observe o andamento na tela de "meus investimentos".');
-        closeModal();
-    };
 
     const handleRowClick = (opportunity) => {
         setSelectedOpportunity(opportunity);
