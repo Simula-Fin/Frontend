@@ -11,7 +11,7 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Graphics from "../../../pages/components/Graphics";
 import Chart from "../../../pages/components/Chart";
-import logo from '../../../assets/logoBank.jpg';
+
 
 const LoanOpportunities = () => {
     const navigate = useNavigate();
@@ -234,7 +234,7 @@ const LoanOpportunities = () => {
                                 Cancelar
                             </button>
                             <button
-                                onClick={confirmInvestmentToast}
+                                onClick={confirmInvestment}
                                 className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
                             >
                                 Confirmar
