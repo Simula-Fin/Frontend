@@ -6,12 +6,13 @@ import LoginPage from '../pages/login';
 import ConsortiumPage from '../pages/consortiumSimulator/ConsortiumPage';
 import FinancingPage from '../pages/financingSimulator/financingPage';
 import LoanRequestPage from '../pages/loanRequest/loanRequestPage';
-import LoanOpportunitiesPage from '../pages/loanOportunities/loanOportunitiesPage'; // Corrigido o caminho da nova página
+import LoanOpportunitiesPage from '../pages/loanOportunities/loanOportunitiesPage';
 import MainLayout from '../utils/MainLayout';
 import { useAuth } from './AuthContext';
 import Register from '../pages/register';
 import Profile from '../pages/profile';
 import HomePage from '../pages/home/homePage';
+import PaymentPage from '../pages/payment/paymentPage';
 
 const Private = ({ Item }) => {
   const { isAuthenticated } = useAuth();
@@ -38,6 +39,7 @@ const MyRoutes = () => {
                 <Route path="/loan-request" element={<Private Item={LoanRequestPage} />} />
                 <Route path="/loan-opportunities" element={<Private Item={LoanOpportunitiesPage} />} /> {/* Nova rota */}
                 <Route path="/profile" element={<Private Item={Profile} />} />
+                <Route path="/payment" element={<Private Item={PaymentPage} />} />
               </Routes>
             </MainLayout>
           }

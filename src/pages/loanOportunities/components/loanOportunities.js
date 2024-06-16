@@ -1,13 +1,16 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { jsPDF } from 'jspdf';
+import { useNavigate } from 'react-router-dom';
 import perfil2 from '../../../assets/img2.png'; 
 import perfil3 from '../../../assets/senhora.png';
 import perfil4 from '../../../assets/mulher3.png';
 import perfil5 from '../../../assets/images4.png'; 
-import logo from '../../../assets/logoBank.jpg'; 
+import logo from '../../../assets/logoBank.jpg';
 
 const LoanOpportunities = () => {
+    const navigate = useNavigate();
+
     const opportunities = [
         { name: 'Alex', duration: 20, amount: 'R$5000', interestRate: '12%', risk: 'baixo', picture: perfil5, loan_id: 1, borrower_id: 1 },
         { name: 'Jorge', duration: 30, amount: 'R$2000', interestRate: '14%', risk: 'alto', picture: perfil2, loan_id: 2, borrower_id: 2 },
@@ -157,8 +160,8 @@ const LoanOpportunities = () => {
             const contract = createMockContract();
             console.log("Mock contract created:", contract);
             generatePDF(contract);
-            alert(`Investment confirmed for ${selectedOpportunity.name}`);
             closeModal();
+            navigate('/payment', { state: { contract } });
         } catch (error) {
             alert('Erro ao confirmar o investimento. Por favor, tente novamente.');
         }
