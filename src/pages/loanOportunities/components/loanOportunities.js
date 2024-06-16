@@ -6,7 +6,12 @@ import perfil2 from '../../../assets/img2.png';
 import perfil3 from '../../../assets/senhora.png';
 import perfil4 from '../../../assets/mulher3.png';
 import perfil5 from '../../../assets/images4.png'; 
-import logo from '../../../assets/logoBank.jpg';
+import logo from '../../../assets/logoBank.jpg'; 
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import Graphics from "../../../pages/components/Graphics";
+import Chart from "../../../pages/components/Chart";
+
 
 const LoanOpportunities = () => {
     const navigate = useNavigate();
@@ -33,6 +38,11 @@ const LoanOpportunities = () => {
             default:
                 return '';
         }
+    };
+
+    const confirmInvestmentToast = () => {
+        toast.success('Seu investimento passará por análise. Observe o andamento na tela de "meus investimentos".');
+        closeModal();
     };
 
     const handleRowClick = (opportunity) => {
@@ -177,7 +187,8 @@ const LoanOpportunities = () => {
                     </button>
                 </Link>
             </div>
-            <div className="overflow-hidden rounded-lg shadow-lg">
+            <Graphics />
+            <div className="overflow-hidden rounded-lg shadow-lg mt-4">
                 <table className="min-w-full bg-white">
                     <thead>
                         <tr>
@@ -210,7 +221,6 @@ const LoanOpportunities = () => {
                     </tbody>
                 </table>
             </div>
-
             {isModalOpen && (
                 <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
                     <div className="bg-white p-6 rounded-lg shadow-lg">
@@ -233,6 +243,10 @@ const LoanOpportunities = () => {
                     </div>
                 </div>
             )}
+
+            <ToastContainer />
+            
+            <Chart />
         </div>
     );
 };
