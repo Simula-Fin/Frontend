@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { FaChevronDown, FaChevronRight, FaHome, FaMoneyCheckAlt, FaHandHoldingUsd, FaCogs, FaUser, FaListUl, FaDollarSign, FaSignOutAlt, FaChartLine } from 'react-icons/fa';
+import { FaChevronDown, FaChevronRight, FaHome, FaMoneyCheckAlt, FaHandHoldingUsd, FaCogs, FaUser, FaListUl, FaDollarSign, FaSignOutAlt, FaChartLine, FaUserShield } from 'react-icons/fa';
 import simulaFinLogo from '../../assets/logoBank.jpg';
 import { useAuth } from '../../utils/AuthContext'
 
@@ -39,7 +39,7 @@ const Sidebar = () => {
                                     <FaHandHoldingUsd className="mr-2" /> Solicitação de Empréstimo
                                 </Link>
                                 <Link to="/loan-opportunities" className="block px-4 py-2 hover:bg-gray-700 flex items-center">
-                                    <FaChartLine className="mr-2" /> Oportunidades de Empréstimo
+                                    <FaChartLine className="mr-2" /> Oportunidades de Investimentos
                                 </Link>
                             </div>
                         )}
@@ -80,6 +80,11 @@ const Sidebar = () => {
                         <FaSignOutAlt className="mr-2" /> Sair
                     </button>
                 </nav>
+            </div>
+            <div className="mt-4">
+                <Link to="/admin" className="block px-4 py-2 hover:bg-gray-700 flex items-center">
+                    <FaUserShield className="mr-2" /> Administrador
+                </Link>
             </div>
 
             {logoutModalOpen && (

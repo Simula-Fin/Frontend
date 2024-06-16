@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import Chart from "../../../pages/components/Chart";
 
 const LoanRequest = () => {
   const [loanAmount, setLoanAmount] = useState('');
@@ -10,6 +11,12 @@ const LoanRequest = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     // Lógica para enviar a solicitação de empréstimo
+    // {
+    //   "amount": 150,
+    //   "interest_rate": 5,
+    //   "duration": 10,
+    //   "goals": "compras"
+    // }
   };
 
   const handleCancel = () => {
@@ -43,6 +50,7 @@ const LoanRequest = () => {
   const loanPurposes = ['Viagem', 'Emergência', 'Doença', 'Compra específica', 'Outros'];
 
   return (
+    <>
     <div className="bg-white p-6 rounded-lg shadow-md">
       <h2 className="text-2xl font-bold mb-4">Solicitar Empréstimo</h2>
       <form onSubmit={handleSubmit}>
@@ -119,6 +127,10 @@ const LoanRequest = () => {
         </div>
       </form>
     </div>
+    <div className="bg-white p-6 rounded-lg shadow-md mt-4">
+      <Chart />
+    </div>
+    </>
   );
 };
 

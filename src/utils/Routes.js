@@ -12,6 +12,7 @@ import { useAuth } from './AuthContext';
 import Register from '../pages/register';
 import Profile from '../pages/profile';
 import HomePage from '../pages/home/homePage';
+import AdminPage from '../pages/admin';
 
 const Private = ({ Item }) => {
   const { isAuthenticated } = useAuth();
@@ -38,6 +39,7 @@ const MyRoutes = () => {
                 <Route path="/loan-request" element={<Private Item={LoanRequestPage} />} />
                 <Route path="/loan-opportunities" element={<Private Item={LoanOpportunitiesPage} />} /> {/* Nova rota */}
                 <Route path="/profile" element={<Private Item={Profile} />} />
+                <Route path="/admin" element={<Private Item={AdminPage} />} />
               </Routes>
             </MainLayout>
           }
