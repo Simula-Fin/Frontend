@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { FaChevronDown, FaChevronRight, FaHome, FaMoneyCheckAlt, FaHandHoldingUsd, FaCogs, FaUser, FaListUl, FaDollarSign, FaSignOutAlt, FaChartLine, FaUserShield } from 'react-icons/fa';
+import { FaChevronDown, FaChevronRight, FaHome, FaMoneyCheckAlt, FaHandHoldingUsd, FaCogs, FaUser, FaListUl, FaDollarSign, FaSignOutAlt, FaChartLine, FaUserShield, FaBookOpen } from 'react-icons/fa';
 import simulaFinLogo from '../../assets/logoBank.jpg';
 import { useAuth } from '../../utils/AuthContext'
 import { ToastContainer } from 'react-toastify';
@@ -37,6 +37,9 @@ const Sidebar = () => {
                         </button>
                         {loanOpen && (
                             <div className="pl-4">
+                                <Link to="/my-loans" className="block px-4 py-2 hover:bg-gray-700 flex items-center">
+                                    <FaBookOpen className="mr-2" /> Meus Empréstimos
+                                </Link>
                                 <Link to="/loan-request" className="block px-4 py-2 hover:bg-gray-700 flex items-center">
                                     <FaHandHoldingUsd className="mr-2" /> Solicitação de Empréstimo
                                 </Link>

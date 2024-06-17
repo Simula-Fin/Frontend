@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom';
 import { useAuth } from '../../utils/AuthContext';
 
 const TopBar = () => {
-    const userName = 'Marcos Vinicius';
+    const userName = 'Victor Rayan Adriano Ferreira';
     const profilePicture = perfil; // Substitua pelo caminho real da imagem de perfil
     const [dropdownOpen, setDropdownOpen] = useState(false);
     const [logoutModalOpen, setLogoutModalOpen] = useState(false);

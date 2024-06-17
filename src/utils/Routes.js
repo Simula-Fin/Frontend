@@ -14,6 +14,7 @@ import Profile from '../pages/profile';
 import HomePage from '../pages/home/homePage';
 import AdminPage from '../pages/admin';
 import PaymentPage from '../pages/payment/paymentPage';
+import MyLoansPages from '../pages/myLoans/myLoansPages';
 
 
 const Private = ({ Item }) => {
@@ -40,6 +41,7 @@ const MyRoutes = () => {
                 <Route path="/financing" element={<Private Item={FinancingPage} />} />
                 <Route path="/loan-request" element={<Private Item={LoanRequestPage} />} />
                 <Route path="/loan-opportunities" element={<Private Item={LoanOpportunitiesPage} />} /> {/* Nova rota */}
+                <Route path="/my-loans" element={<Private Item={MyLoansPages} />} />
                 <Route path="/profile" element={<Private Item={Profile} />} />
                 <Route path="/admin" element={<Private Item={AdminPage} />} />
                 <Route path="/payment" element={<Private Item={PaymentPage} />} />
