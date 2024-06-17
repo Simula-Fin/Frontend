@@ -22,12 +22,17 @@ export const AuthProvider = ({ children }) => {
     setIsAuthenticated(true);
   };
 
+  const setUserLogin = (userData) => {
+    setUser(userData);
+    console.log(user)
+  };
+
   const authLogout = () => {
     setIsAuthenticated(false);
   };
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, authLogin, authLogout, user}}>
+    <AuthContext.Provider value={{ isAuthenticated, authLogin, authLogout, user, setUserLogin}}>
       {children}
     </AuthContext.Provider>
   );

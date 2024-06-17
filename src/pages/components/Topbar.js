@@ -26,7 +26,7 @@ const TopBar = () => {
                 <FaBell className="mr-4 cursor-pointer" />
                 <div className="relative">
                     <div className="flex items-center cursor-pointer" onClick={toggleDropdown}>
-                        <span className="mr-2">{user.name}</span>
+                        <span className="mr-2">{user?.name}</span>
                         <img src={profilePicture} alt="Profile" className="h-8 w-8 rounded-full" />
                     </div>
                     {dropdownOpen && (

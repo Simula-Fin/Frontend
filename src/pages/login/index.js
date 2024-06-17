@@ -10,7 +10,7 @@ import { FaEye, FaEyeSlash } from 'react-icons/fa';
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const { authLogin, isAuthenticated } = useAuth();
+  const { authLogin, isAuthenticated, setUserLogin } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
 
   const togglePasswordVisibility = () => {
@@ -23,21 +23,16 @@ const Login = () => {
 
   const login = async (email, password) => {
     try {
-      // const response = await authAxiosInstance.post(
-      //   '/auth/access-token', {
-      //   username: email,
-      //   password: password
-      // });
-
       const response = await authAxiosInstance.post(
         '/auth/access-token',
         `grant_type=&username=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}&scope=&client_id=&client_secret=`
       );
-
       const token = response.data.access_token;
       localStorage.setItem('token', token);
+      await getUser();
       authLogin();
-      getUser();
+    
+
     } catch (error) {
       console.error('Erro ao fazer login:', error);
     }
@@ -47,6 +42,7 @@ const Login = () => {
     try{
       const response = await authAxiosInstance.get('/users/me');
       localStorage.setItem('user', JSON.stringify(response.data));
+      setUserLogin(response.data)
     } catch (error) {
       console.error('Erro ao pegar usuário:', error);
     }
