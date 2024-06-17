@@ -5,11 +5,10 @@ import { Link } from 'react-router-dom';
 import { useAuth } from '../../utils/AuthContext';
 
 const TopBar = () => {
-    const userName = 'Marcos Vinicius';
     const profilePicture = perfil; // Substitua pelo caminho real da imagem de perfil
     const [dropdownOpen, setDropdownOpen] = useState(false);
     const [logoutModalOpen, setLogoutModalOpen] = useState(false);
-    const { authLogout } = useAuth();
+    const { authLogout, user } = useAuth();
 
     const toggleDropdown = () => {
         setDropdownOpen(!dropdownOpen);
@@ -27,7 +26,7 @@ const TopBar = () => {
                 <FaBell className="mr-4 cursor-pointer" />
                 <div className="relative">
                     <div className="flex items-center cursor-pointer" onClick={toggleDropdown}>
-                        <span className="mr-2">{userName}</span>
+                        <span className="mr-2">{user.name}</span>
                         <img src={profilePicture} alt="Profile" className="h-8 w-8 rounded-full" />
                     </div>
                     {dropdownOpen && (

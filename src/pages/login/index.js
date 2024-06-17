@@ -37,10 +37,20 @@ const Login = () => {
       const token = response.data.access_token;
       localStorage.setItem('token', token);
       authLogin();
+      getUser();
     } catch (error) {
       console.error('Erro ao fazer login:', error);
     }
   };
+
+  const getUser = async () => {
+    try{
+      const response = await authAxiosInstance.get('/users/me');
+      localStorage.setItem('user', JSON.stringify(response.data));
+    } catch (error) {
+      console.error('Erro ao pegar usuário:', error);
+    }
+  }
 
   if (isAuthenticated) {
     return <Navigate to="/" replace />;
