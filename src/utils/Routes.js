@@ -22,6 +22,13 @@ const Private = ({ Item }) => {
   return isAuthenticated ? <Item /> : <Navigate to="/login" />;
 };
 
+const Admin = ({ Item }) => {
+  const { user } = useAuth();
+  console.log('Admin', user)
+
+  return user?.is_admin ? <Item /> : <Navigate to="/" />;
+};
+
 const MyRoutes = () => {
   return (
     <Router>
@@ -41,7 +48,7 @@ const MyRoutes = () => {
                 <Route path="/loan-request" element={<Private Item={LoanRequestPage} />} />
                 <Route path="/loan-opportunities" element={<Private Item={LoanOpportunitiesPage} />} /> {/* Nova rota */}
                 <Route path="/profile" element={<Private Item={Profile} />} />
-                <Route path="/admin" element={<Private Item={AdminPage} />} />
+                <Route path="/admin" element={<Admin Item={AdminPage} />} />
                 <Route path="/payment" element={<Private Item={PaymentPage} />} />
               </Routes>
             </MainLayout>
