@@ -3,6 +3,8 @@ import { Link } from 'react-router-dom';
 import { FaChevronDown, FaChevronRight, FaHome, FaMoneyCheckAlt, FaHandHoldingUsd, FaCogs, FaUser, FaListUl, FaDollarSign, FaSignOutAlt, FaChartLine, FaUserShield } from 'react-icons/fa';
 import simulaFinLogo from '../../assets/logoBank.jpg';
 import { useAuth } from '../../utils/AuthContext'
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const Sidebar = () => {
     const [configOpen, setConfigOpen] = useState(false);
@@ -109,6 +111,7 @@ const Sidebar = () => {
                     </div>
                 </div>
             )}
+            <ToastContainer />
         </div>
     );
 };

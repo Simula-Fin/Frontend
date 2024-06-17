@@ -7,8 +7,6 @@ import perfil3 from '../../../assets/senhora.png';
 import perfil4 from '../../../assets/mulher3.png';
 import perfil5 from '../../../assets/images4.png'; 
 import logo from '../../../assets/logoBank.jpg'; 
-import { ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
 import Graphics from "../../../pages/components/Graphics";
 import Chart from "../../../pages/components/Chart";
 
@@ -239,9 +237,7 @@ const LoanOpportunities = () => {
                     </div>
                 </div>
             )}
-
-            <ToastContainer />
-            
+           
             <Chart />
         </div>
     );

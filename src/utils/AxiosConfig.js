@@ -1,10 +1,11 @@
-import axios from 'axios';
+import axios from "axios";
 
 // URL base para simulações
-const BASE_URL_SIMULATIONS = 'https://simulafin.up.railway.app';
+const BASE_URL_SIMULATIONS = "https://simulafin.up.railway.app";
 
 // URL base para contratos
-const BASE_URL_CONTRACTS = 'https://peer-to-peer-loan-service-production.up.railway.app';
+const BASE_URL_CONTRACTS =
+  "https://peer-to-peer-loan-service-production.up.railway.app";
 
 // Instância sem autenticação para simulações
 const axiosInstance = axios.create({
@@ -17,13 +18,13 @@ const authAxiosInstance = axios.create({
 });
 
 // Instância com autenticação para contratos
-const contractAxiosInstance = axios.create({
+const p2pAxiosInstance = axios.create({
   baseURL: BASE_URL_CONTRACTS,
 });
 
 authAxiosInstance.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem("token");
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -34,9 +35,9 @@ authAxiosInstance.interceptors.request.use(
   }
 );
 
-contractAxiosInstance.interceptors.request.use(
+p2pAxiosInstance.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem("token");
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -47,4 +48,4 @@ contractAxiosInstance.interceptors.request.use(
   }
 );
 
-export { axiosInstance, authAxiosInstance, contractAxiosInstance };
+export { axiosInstance, authAxiosInstance, p2pAxiosInstance };
