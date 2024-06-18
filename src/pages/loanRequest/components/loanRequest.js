@@ -62,10 +62,12 @@ const LoanRequest = () => {
   };
 
   const formatCurrency = (value) => {
-    return value
-      .replace(/\D/g, "")
-      .replace(/(\d)(\d{2})$/, "$1,$2")
-      .replace(/(?=(\d{3})+(\D))\B/g, ".");
+    value = value.replace(/[^\d,.]|\.(?=.*[,.])/g, "");
+    value = value.replace(/\.(?![\d]{2})/g, "");
+    value = value.replace(",", ".");
+    value = parseFloat(value).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, "$&,");
+  
+    return value;
   };
 
   const handleLoanAmountChange = (e) => {

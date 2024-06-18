@@ -1,17 +1,14 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import perfil2 from "../../../assets/img2.png";
 import perfil3 from "../../../assets/senhora.png";
 import perfil4 from "../../../assets/mulher3.png";
 import perfil5 from "../../../assets/images4.png";
-import logo from "../../../assets/logoBank.jpg";
 import { FaRegCalendarMinus } from "react-icons/fa";
 import Chart from "../../../pages/components/Chart";
 import { toast } from "react-toastify";
 import { p2pAxiosInstance } from "../../../utils/AxiosConfig";
 
 const MyLoans = () => {
-  const navigate = useNavigate();
   const [opportunities, setOpportunities] = useState([]);
 
   useEffect(() => {
