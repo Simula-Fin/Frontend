@@ -14,6 +14,7 @@ import {
   FaChartLine,
   FaUserShield,
   FaBookOpen,
+  FaPiggyBank,
 } from "react-icons/fa";
 import simulaFinLogo from "../../assets/logoBank.jpg";
 import { useAuth } from "../../utils/AuthContext";
@@ -23,13 +24,12 @@ import "react-toastify/dist/ReactToastify.css";
 const Sidebar = () => {
   const [configOpen, setConfigOpen] = useState(false);
   const [simulationOpen, setSimulationOpen] = useState(false);
-  const [loanOpen, setLoanOpen] = useState(false); // Novo estado para a seção de Empréstimos
+  const [loanOpen, setLoanOpen] = useState(false);
   const [logoutModalOpen, setLogoutModalOpen] = useState(false);
   const { authLogout } = useAuth();
 
   const handleLogout = () => {
     authLogout();
-
     setLogoutModalOpen(false);
   };
 
@@ -76,6 +76,12 @@ const Sidebar = () => {
                 >
                   <FaHandHoldingUsd className="mr-2" /> Solicitação de
                   Empréstimo
+                </Link>
+                <Link
+                  to="/my-investments"
+                  className="block px-4 py-2 hover:bg-gray-700 flex items-center"
+                >
+                  <FaPiggyBank className="mr-2" /> Meus Investimentos
                 </Link>
                 <Link
                   to="/loan-opportunities"
