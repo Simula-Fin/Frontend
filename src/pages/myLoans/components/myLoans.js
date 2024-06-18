@@ -136,15 +136,15 @@ const MyLoans = () => {
                       <tr className="bg-gray-100">
                         <th className="py-2 px-4 border-b text-center">Número da Parcela</th>
                         <th className="py-2 px-4 border-b text-center">Valor da Parcela</th>
-                        <th className="py-2 px-4 border-b text-center">Taxa de Juros</th>
                         <th className="py-2 px-4 border-b text-center">Status</th>
+                        <th className="py-2 px-4 border-b text-center">Data de Vencimento</th>
                       </tr>
                       {loanInstallments.map((installment) => (
                         <tr key={installment.payment_id} className="hover:bg-gray-100 transition-all duration-200 transform hover:scale-105 cursor-pointer">
                           <td className="py-2 px-4 border-b text-center">{installment.installment_number}</td>
                           <td className="py-2 px-4 border-b text-center">R${installment.amount}</td>
-                          <td className="py-2 px-4 border-b text-center">{installment.interest_rate}%</td>
                           <td className="py-2 px-4 border-b text-center">{installment.status}</td>
+                          <td className="py-2 px-4 border-b text-center">{new Date(installment.due_date).toLocaleDateString()}</td>
                         </tr>
                       ))}
                     </React.Fragment>
