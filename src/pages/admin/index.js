@@ -14,50 +14,6 @@ import perfil5 from "../../assets/images4.png";
 const AdminPage = () => {
   const [opportunities, setOpportunities] = useState([]);
   const [investPaymentsPending, setInvestPaymentsPending] = useState([]);
-
-  const payments = [
-    {
-      name: "Alex",
-      duration: 20,
-      amount: "R$5000",
-      interestRate: "12%",
-      risk: "baixo",
-      picture: perfil4,
-    },
-    {
-      name: "Jorge",
-      duration: 30,
-      amount: "R$2000",
-      interestRate: "14%",
-      risk: "alto",
-      picture: perfil2,
-    },
-    {
-      name: "Rebeca",
-      duration: 40,
-      amount: "R$9000",
-      interestRate: "22%",
-      risk: "baixo",
-      picture: perfil3,
-    },
-    {
-      name: "Cassiana",
-      duration: 50,
-      amount: "R$7000",
-      interestRate: "72%",
-      risk: "médio",
-      picture: perfil4,
-    },
-    {
-      name: "Eduardo",
-      duration: 60,
-      amount: "R$2000",
-      interestRate: "47%",
-      risk: "baixo",
-      picture: perfil5,
-    },
-  ];
-
   const [selectedPayment, setSelectedPayment] = useState(null);
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
 
