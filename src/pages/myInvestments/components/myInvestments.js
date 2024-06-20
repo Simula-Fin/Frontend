@@ -1,53 +1,138 @@
 import React, { useState, useEffect } from "react";
-import perfil2 from "../../../assets/img2.png";
-import perfil3 from "../../../assets/senhora.png";
-import perfil4 from "../../../assets/mulher3.png";
-import perfil5 from "../../../assets/images4.png";
-import { FaRegCalendarMinus } from "react-icons/fa";
 import { FaDownload } from "react-icons/fa";
 import Chart from "../../../pages/components/Chart";
+import Graphics from "../../../pages/components/Graphics";
 import { toast } from "react-toastify";
-import Modal from 'react-modal';
+import Modal from "react-modal";
 import { p2pAxiosInstance } from "../../../utils/AxiosConfig";
-import { createMockContract, generatePDF } from "../../../utils/generateContract";
+import {
+  createMockContract,
+  generatePDF,
+} from "../../../utils/generateContract";
+import QRCode from "react-qr-code";
 
-Modal.setAppElement('#root');
+Modal.setAppElement("#root");
 
 const MyInvestments = () => {
   const [investments, setInvestments] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedInvestment, setSelectedInvestment] = useState(null);
+  const [selectedInvestmentInfo, setSelectedInvestmentInfo] = useState(null);
+  const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
+  const [selectedPayment, setSelectedPayment] = useState(null);
+
+  const [loans, setLoans] = useState([]);
+
+  const handleQRCodeClick = async (payment_id) => {
+    try {
+      const response = await p2pAxiosInstance.put(
+        `/loans/status/${payment_id}`,
+        {
+          status: "payed",
+        }
+      );
+      if (response.status === 200) {
+        closePaymentModal();
+        toast.success("Pagamento realizado com sucesso!");
+      } else {
+        closePaymentModal();
+        toast.error("Erro ao realizar o pagamento. Tente novamente.");
+      }
+    } catch (error) {
+      closePaymentModal();
+      toast.error("Erro ao realizar o pagamento. Tente novamente.");
+    }
+  };
+
+  const handleRowClickPayments = (payment) => {
+    console.log(payment);
+    setSelectedPayment(payment);
+    setIsPaymentModalOpen(true);
+  };
+
+  const closePaymentModal = () => {
+    setIsPaymentModalOpen(false);
+    setSelectedPayment(null);
+  };
 
   useEffect(() => {
-    const pictures = [perfil2, perfil3, perfil4, perfil5];
+    const fetchPayments = async () => {
+      try {
+        const response = await p2pAxiosInstance.get("/payments/user/investor");
+        const data = response.data;
 
-    // Dados mockados
-    const mockData = [
-      { investment_id: 1, investor_id: 1, borrower_name: "Alex", amount: 1000, interest_rate: 5, duration: 12, expected_profit: 50, status: "ativo" },
-      { investment_id: 2, investor_id: 1, borrower_name: "Jorge", amount: 2000, interest_rate: 10, duration: 24, expected_profit: 200, status: "concluído" },
-      { investment_id: 3, investor_id: 1, borrower_name: "Rebeca", amount: 3000, interest_rate: 15, duration: 36, expected_profit: 450, status: "ativo" },
-    ];
+        const groupedLoans = data.reduce((acc, loan) => {
+          const { loan_id } = loan;
+          if (!acc[loan_id]) {
+            acc[loan_id] = [];
+          }
+          acc[loan_id].push(loan);
+          return acc;
+        }, {});
 
-    setInvestments(mockData);
+        setLoans(groupedLoans);
+      } catch (error) {
+        console.error("Erro ao buscar os pagamentos:", error);
+        toast.error("Erro ao carregar pagamentos. Por favor, tente novamente.");
+      }
+    };
 
-    // Código comentado que será mantido
-    // const fetchInvestments = async () => {
-    //   try {
-    //     const response = await p2pAxiosInstance.get("/investments");
-    //     const data = response.data.map((investment, index) => ({
-    //       ...investment,
-    //       picture: pictures[index % pictures.length],
-    //     }));
-    //     setInvestments(data);
-    //   } catch (error) {
-    //     console.error("Erro ao buscar investimentos:", error);
-    //     toast.error(
-    //       "Erro ao carregar investimentos. Por favor, tente novamente."
-    //     );
-    //   }
-    // };
+    fetchPayments();
+  }, []);
 
-    // fetchInvestments();
+  const [expandedLoan, setExpandedLoan] = useState(null);
+
+  const toggleExpand = (loanId) => {
+    setExpandedLoan(expandedLoan === loanId ? null : loanId);
+  };
+
+  const calculateLoanSummary = (loanInstallments) => {
+    const totalAmount = loanInstallments.reduce(
+      (acc, installment) => acc + installment.amount,
+      0
+    );
+    const duration = loanInstallments[0]?.duration || 0;
+    const interestRate = loanInstallments[0]?.interest_rate || 0;
+    const numberOfInstallments = loanInstallments.length;
+    return { totalAmount, duration, interestRate, numberOfInstallments };
+  };
+
+  const handleToggleDetails = (investment) => {
+    if (
+      selectedInvestmentInfo &&
+      selectedInvestmentInfo.investment_id === investment.investment_id
+    ) {
+      setSelectedInvestmentInfo(null);
+    } else {
+      setSelectedInvestmentInfo(investment);
+    }
+  };
+  useEffect(() => {
+    const fetchInvestments = async () => {
+      try {
+        const response = await p2pAxiosInstance.get("/contracts/user");
+        const data = response.data.map((investment) => ({
+          ...investment,
+          investment_id: investment.contract_id,
+          investor_id: investment.investor_id,
+          borrower_name: investment.borrower_user.name,
+          amount: investment.loan.amount,
+          interest_rate: investment.loan.interest_rate,
+          duration: investment.loan.duration,
+          expected_profit: 100,
+          status: investment.status,
+        }));
+
+        setInvestments(data);
+      } catch (error) {
+        console.error("Erro ao buscar os investimentos:", error);
+        toast.error(
+          "Erro ao carregar investimentos. Por favor, tente novamente."
+        );
+      }
+    };
+
+    fetchInvestments();
   }, []);
 
   const handleDownloadContract = (investment) => {
@@ -66,47 +151,260 @@ const MyInvestments = () => {
       <div className="flex justify-between items-center mb-4">
         <h1 className="text-xl font-bold">Meus Investimentos</h1>
       </div>
-      <>
-        <div className="grid grid-cols-4 gap-[30px] mt-[25px] pb-[15px]">
-          <div className="h-[100px] rounded-[8px] bg-white border-l-[4px] border-[#4E73DF] flex items-center justify-between px-[30px] cursor-pointer hover:shadow-lg transform hover:scale-[103%] transition duration-300 ease-out">
-            <div>
-              <h2 className="text-[#B589DF] text-[11px] leading-[17px] font-bold">INVESTIMENTOS REALIZADOS</h2>
-              <h1 className="text-[20px] leading-[24px] font-bold text-[#5a5c69] mt-[5px]">{investments.length}</h1>
-            </div>
-            <FaRegCalendarMinus fontSize={28} color="" />
-          </div>
-          <div className="h-[100px] rounded-[8px] bg-white border-l-[4px] border-[#1CC88A] flex items-center justify-between px-[30px] cursor-pointer hover:shadow-lg transform hover:scale-[103%] transition duration-300 ease-out">
-            <div>
-              <h2 className="text-[#1cc88a] text-[11px] leading-[17px] font-bold">RENDA EMPREGADA</h2>
-              <h1 className="text-[20px] leading-[24px] font-bold text-[#5a5c69] mt-[5px]">R$1750.00</h1>
-            </div>
-            <FaRegCalendarMinus fontSize={28} />
-          </div>
-          <div className="h-[100px] rounded-[8px] bg-white border-l-[4px] border-[#36B9CC] flex items-center justify-between px-[30px] cursor-pointer hover:shadow-lg transform hover:scale-[103%] transition duration-300 ease-out">
-            <div>
-              <h2 className="text-[#1cc88a] text-[11px] leading-[17px] font-bold">LUCRO ESTIMADO (MÊS)</h2>
-              <h1 className="text-[20px] leading-[24px] font-bold text-[#5a5c69] mt-[5px]">R$175.00</h1>
-            </div>
-            <FaRegCalendarMinus fontSize={28} />
-          </div>
-          <div className="h-[100px] rounded-[8px] bg-white border-l-[4px] border-[#F6C23E] flex items-center justify-between px-[30px] cursor-pointer hover:shadow-lg transform hover:scale-[103%] transition duration-300 ease-out">
-            <div>
-              <h2 className="text-[#1cc88a] text-[11px] leading-[17px] font-bold">INVESTIMENTOS EM ANÁLISE</h2>
-              <h1 className="text-[20px] leading-[24px] font-bold text-[#5a5c69] mt-[5px]">0</h1>
-            </div>
-            <FaRegCalendarMinus fontSize={28} />
-          </div>
+      <Graphics />
+      <div className="container mx-auto">
+        <div className="flex justify-between items-center mb-4">
+          <h1 className="text-xl font-bold">
+            Informações Geral do meu investimento
+          </h1>
         </div>
-      </>
+        <div className="overflow-x-auto mb-4">
+          <table className="min-w-full bg-white rounded-lg overflow-hidden">
+            <thead>
+              <tr className="bg-gray-200 text-gray-700 uppercase text-sm leading-normal">
+                <th className="py-3 px-6 text-left">Nome do Devedor</th>
+                <th className="py-3 px-6 text-left">Valor Emprestado</th>
+                <th className="py-3 px-6 text-left">Taxa de Juros</th>
+                <th className="py-3 px-6 text-left">Duração (Meses)</th>
+                <th className="py-3 px-6 text-left">Status</th>
+                <th className="py-3 px-6 text-left">Ações</th>
+              </tr>
+            </thead>
+            <tbody>
+              {investments.map((investment, index) => (
+                <tr
+                  key={index}
+                  className="hover:bg-gray-100 transition-all duration-200 transform hover:scale-100 cursor-pointer"
+                >
+                  <td className="py-3 px-6 text-left whitespace-nowrap">
+                    {investment.borrower_user.name}
+                  </td>
+                  <td className="py-3 px-6 text-left">{`R$ ${investment.amount}`}</td>
+                  <td className="py-3 px-6 text-left">{`${investment.interest_rate}%`}</td>
+                  <td className="py-3 px-6 text-left">{investment.duration}</td>
+                  <td className="py-3 px-6 text-left">
+                    <span className="bg-green-100 text-green-600 py-1 px-3 rounded-full">
+                      {investment.loan.status}
+                    </span>
+                  </td>
+                  <td className="py-3 px-6 text-left">
+                    <button
+                      className="text-blue-600 hover:text-blue-800 mr-2"
+                      onClick={() => handleToggleDetails(investment)}
+                    >
+                      {selectedInvestmentInfo &&
+                      selectedInvestmentInfo.investment_id ===
+                        investment.investment_id
+                        ? "Fechar"
+                        : "Ver mais"}
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        {selectedInvestmentInfo && (
+          <div className="bg-white shadow-lg rounded-lg p-6 mb-4">
+            <h2 className="text-lg font-semibold mb-4">
+              Detalhes do Investimento
+            </h2>
+            <div className="mb-4">
+              <h3 className="text-md font-medium">Informações do Empréstimo</h3>
+              <p>
+                <strong>Nome do Devedor:</strong>{" "}
+                {selectedInvestmentInfo.borrower_user.name}
+              </p>
+              <p>
+                <strong>Email do Devedor:</strong>{" "}
+                {selectedInvestmentInfo.borrower_user.email}
+              </p>
+              <p>
+                <strong>Valor Emprestado:</strong> R${" "}
+                {selectedInvestmentInfo.loan.amount}
+              </p>
+              <p>
+                <strong>Taxa de Juros:</strong>{" "}
+                {selectedInvestmentInfo.loan.interest_rate}%
+              </p>
+              <p>
+                <strong>Duração:</strong> {selectedInvestmentInfo.loan.duration}{" "}
+                meses
+              </p>
+              <p>
+                <strong>Status do Empréstimo:</strong>{" "}
+                {selectedInvestmentInfo.loan.status}
+              </p>
+              {selectedInvestmentInfo.status === "approved" && (
+                <div className="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 mt-4">
+                  <p>Realize o pagamento do empréstimo!</p>
+                  <button
+                    onClick={() =>
+                      handleRowClickPayments(selectedInvestmentInfo)
+                    }
+                    className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-4"
+                  >
+                    Ver Detalhes do Pagamento
+                  </button>
+                </div>
+              )}
+              {isPaymentModalOpen && (
+                <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+                  <div className="bg-white p-6 rounded-lg shadow-lg">
+                    <h2 className="text-xl font-bold mb-4">
+                      Pagamento Pendentes
+                    </h2>
+                    {selectedPayment && (
+                      <>
+                        <div
+                          className="flex justify-center mb-4"
+                          onClick={() =>
+                            handleQRCodeClick(selectedPayment.loan_id)
+                          }
+                        >
+                          <QRCode
+                            value={`https://example.com/investments/user/${selectedPayment.payment_id}`}
+                          />
+                        </div>
+                        <p className="text-center">
+                          Escaneie o QR code para realizar o pagamento.
+                        </p>
+                      </>
+                    )}
+                    <div className="mt-4 flex justify-end">
+                      <button
+                        onClick={closePaymentModal}
+                        className="bg-gray-300 text-gray-700 px-4 py-2 rounded mr-2 hover:bg-gray-400"
+                      >
+                        Fechar
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+            <div className="mb-4">
+              <h3 className="text-md font-medium">Informações do Investidor</h3>
+              <p>
+                <strong>Nome do Investidor:</strong>{" "}
+                {selectedInvestmentInfo.investor_user.name}
+              </p>
+              <p>
+                <strong>Email do Investidor:</strong>{" "}
+                {selectedInvestmentInfo.investor_user.email}
+              </p>
+            </div>
+            <div>
+              <h3 className="text-md font-medium">
+                Informações Gerais do Contrato
+              </h3>
+              <p>
+                <strong>Data de Assinatura:</strong>{" "}
+                {new Date(
+                  selectedInvestmentInfo.date_signed
+                ).toLocaleDateString()}
+              </p>
+              <p>
+                <strong>Status do Contrato:</strong>{" "}
+                {selectedInvestmentInfo.status}
+              </p>
+            </div>
+          </div>
+        )}
+      </div>
+      <div className="flex justify-between items-center mb-4">
+        <h1 className="text-xl font-bold">Meus Pagamentos</h1>
+      </div>
       <div className="overflow-hidden rounded-lg shadow-lg mt-4">
         <table className="min-w-full bg-white">
           <thead>
             <tr>
-              <th className="py-2 px-4 border-b text-center">Nome do Devedor</th>
-              <th className="py-2 px-4 border-b text-center">Valor Emprestado</th>
-              <th className="py-2 px-4 border-b text-center">Taxa de Juros</th>
-              <th className="py-2 px-4 border-b text-center">Duração (Meses)</th>
-              <th className="py-2 px-4 border-b text-center">Lucro Esperado</th>
+              <th className="py-2 px-4 border-b text-center">Valor Total</th>
+              <th className="py-2 px-4 border-b text-center">
+                Número de Parcelas
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {Object.keys(loans).map((loanId) => {
+              const loanInstallments = loans[loanId];
+              const { totalAmount, numberOfInstallments } =
+                calculateLoanSummary(loanInstallments);
+              return (
+                <React.Fragment key={loanId}>
+                  <tr
+                    className="cursor-pointer bg-gray-200 hover:bg-gray-300"
+                    onClick={() => toggleExpand(loanId)}
+                  >
+                    <td className="py-2 px-4 border-b text-center">
+                      R${totalAmount}
+                    </td>
+                    <td className="py-2 px-4 border-b text-center">
+                      {numberOfInstallments}
+                    </td>
+                  </tr>
+                  {expandedLoan === loanId && (
+                    <React.Fragment>
+                      <tr className="bg-gray-100">
+                        <th className="py-2 px-4 border-b text-center">
+                          Número da Parcela
+                        </th>
+                        <th className="py-2 px-4 border-b text-center">
+                          Valor da Parcela
+                        </th>
+                        <th className="py-2 px-4 border-b text-center">
+                          Status
+                        </th>
+                        <th className="py-2 px-4 border-b text-center">
+                          Data de Vencimento
+                        </th>
+                      </tr>
+                      {loanInstallments.map((installment) => (
+                        <tr
+                          key={installment.payment_id}
+                          className="hover:bg-gray-100 transition-all duration-200 transform hover:scale-105 cursor-pointer"
+                        >
+                          <td className="py-2 px-4 border-b text-center">
+                            {installment.installment_number}
+                          </td>
+                          <td className="py-2 px-4 border-b text-center">
+                            R${installment.amount}
+                          </td>
+                          <td className="py-2 px-4 border-b text-center">
+                            <span
+                              className={`py-1 px-3 rounded-full ${
+                                installment.status === "pending"
+                                  ? "bg-red-100 text-red-600"
+                                  : "bg-green-100 text-green-600"
+                              }`}
+                            >
+                              {installment.status}
+                            </span>
+                          </td>
+                          <td className="py-2 px-4 border-b text-center">
+                            {new Date(
+                              installment.due_date
+                            ).toLocaleDateString()}
+                          </td>
+                        </tr>
+                      ))}
+                    </React.Fragment>
+                  )}
+                </React.Fragment>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+
+      <div className="flex justify-between items-center mb-4 mt-4">
+        <h1 className="text-xl font-bold">Meus Contratos</h1>
+      </div>
+      <div className="overflow-hidden rounded-lg shadow-lg mt-4">
+        <table className="min-w-full bg-white">
+          <thead>
+            <tr>
               <th className="py-2 px-4 border-b text-center">Status</th>
               <th className="py-2 px-4 border-b text-center">Contrato</th>
             </tr>
@@ -117,12 +415,11 @@ const MyInvestments = () => {
                 key={index}
                 className="hover:bg-gray-100 transition-all duration-200 transform hover:scale-105 cursor-pointer"
               >
-                <td className="py-2 px-4 border-b text-center">{investment.borrower_name}</td>
-                <td className="py-2 px-4 border-b text-center">R${investment.amount}</td>
-                <td className="py-2 px-4 border-b text-center">{investment.interest_rate}%</td>
-                <td className="py-2 px-4 border-b text-center">{investment.duration}</td>
-                <td className="py-2 px-4 border-b text-center">R${investment.expected_profit}</td>
-                <td className="py-2 px-4 border-b text-center">{investment.status}</td>
+                <td className="py-2 px-4 border-b text-center">
+                  <span className="bg-green-100 text-green-600 py-1 px-3 rounded-full">
+                    {investment.status}
+                  </span>
+                </td>
                 <td className="py-2 px-4 border-b text-center">
                   <FaDownload
                     className="text-green-500 cursor-pointer mx-auto"
@@ -142,18 +439,18 @@ const MyInvestments = () => {
         contentLabel="Confirmar Download"
         style={{
           content: {
-            top: '50%',
-            left: '50%',
-            right: 'auto',
-            bottom: 'auto',
-            marginRight: '-50%',
-            transform: 'translate(-50%, -50%)',
-            padding: '20px',
-            borderRadius: '8px',
-            boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+            top: "50%",
+            left: "50%",
+            right: "auto",
+            bottom: "auto",
+            marginRight: "-50%",
+            transform: "translate(-50%, -50%)",
+            padding: "20px",
+            borderRadius: "8px",
+            boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
           },
           overlay: {
-            backgroundColor: 'rgba(0, 0, 0, 0.5)',
+            backgroundColor: "rgba(0, 0, 0, 0.5)",
           },
         }}
       >

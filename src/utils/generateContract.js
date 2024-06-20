@@ -4,28 +4,30 @@ import logo from '../assets/logoBank.jpg';
 const createMockContract = (investment) => {
     const contract = {
         contract_id: Math.floor(Math.random() * 100000),
-        loan_id: investment.loan_id,
-        investor_id: investment.investor_id, // Mock investor ID
-        borrower_id: investment.borrower_id,
+        loan_id: investment.loan.loan_id,
+        investor_id: investment.investor_user.user_id,
+        borrower_id: investment.borrower_user.user_id,
         status: "active",
-        date_signed: new Date().toISOString(),
-        investor_signature_digital_uuid: "mock-uuid-investor",
-        borrower_signature_digital_uuid: "mock-uuid-borrower",
-        investor_name: "John Doe",
-        investor_cpf: "123.456.789-00",
+        date_signed: new Date(
+            investment.date_signed
+          ).toLocaleDateString(),
+        investor_signature_digital_uuid: investment.investor_signature_digital_uuid,
+        borrower_signature_digital_uuid: investment.borrower_signature_digital_uuid,
+        investor_name: investment.investor_user.name,
+        investor_cpf: investment.investor_user.cpf,
         investor_rg: "12.345.678-9",
         investor_nationality: "Brasileiro",
         investor_profession: "Engenheiro",
         investor_address: "Rua Exemplo, 123, São Paulo, SP",
-        borrower_name: investment.borrower_name,
-        borrower_cpf: "987.654.321-00",
+        borrower_name: investment.borrower_user.name,
+        borrower_cpf: investment.borrower_user.cpf,
         borrower_rg: "98.765.432-1",
         borrower_nationality: "Brasileiro",
         borrower_profession: "Professor",
         borrower_address: "Rua Fictícia, 456, Rio de Janeiro, RJ",
-        amount: investment.amount,
-        interestRate: investment.interest_rate,
-        duration: investment.duration
+        amount: investment.loan.amount,
+        interestRate: investment.loan.interest_rate,
+        duration: investment.loan.duration
     };
     return contract;
 };

@@ -13,6 +13,7 @@ import perfil5 from "../../assets/images4.png";
 
 const AdminPage = () => {
   const [opportunities, setOpportunities] = useState([]);
+  const [investPaymentsPending, setInvestPaymentsPending] = useState([]);
 
   const payments = [
     {
@@ -98,7 +99,26 @@ const AdminPage = () => {
       }
     };
 
+    const fetchInvestPaymentsPending = async () => {
+      try {
+        const response = await p2pAxiosInstance.get(
+          "/payments/pending-payments"
+        );
+        const data = response.data.map((payment, index) => ({
+          ...payment,
+          picture: pictures[index % pictures.length],
+        }));
+        setInvestPaymentsPending(data);
+      } catch (error) {
+        console.error("Erro ao buscar investimentos pendentes:", error);
+        toast.error(
+          "Erro ao carregar investimentos pendentes. Por favor, tente novamente."
+        );
+      }
+    };
+
     fetchOpportunities();
+    fetchInvestPaymentsPending();
   }, []);
 
   const handleApprove = async (opportunity) => {
@@ -155,10 +175,13 @@ const AdminPage = () => {
     setSelectedOpportunity(null);
   };
 
-  const handleQRCodeClick = async (userName) => {
+  const handleQRCodeClick = async (payment_id) => {
     try {
-      const response = await p2pAxiosInstance.get(
-        `/investments/user/${userName}`
+      const response = await p2pAxiosInstance.patch(
+        `/payments/investor/${payment_id}`,
+        {
+          status: "payed",
+        }
       );
       if (response.status === 200) {
         toast.success("Pagamento realizado com sucesso!");
@@ -195,19 +218,20 @@ const AdminPage = () => {
               <table className="min-w-full bg-white">
                 <thead>
                   <tr>
-                    <th className="py-2 px-4 border-b text-left">Investidor</th>
+                    <th className="py-2 px-4 border-b text-left">
+                      Email do Investidor
+                    </th>
                     <th className="py-2 px-4 border-b text-center">
-                      Duração (Meses)
+                      Status do Pagamento
                     </th>
                     <th className="py-2 px-4 border-b text-center">Valor</th>
                     <th className="py-2 px-4 border-b text-center">
-                      Taxa de Juros
+                      Número da Parcela
                     </th>
-                    <th className="py-2 px-4 border-b text-center">Risco</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {payments.map((payment, index) => (
+                  {investPaymentsPending.map((payment, index) => (
                     <tr
                       key={index}
                       onClick={() => handleRowClickPayments(payment)}
@@ -216,27 +240,27 @@ const AdminPage = () => {
                       <td className="py-2 px-4 border-b flex items-center">
                         <img
                           src={payment.picture}
-                          alt={payment.name}
+                          alt={payment.loan.user.name}
                           className="h-10 w-10 mr-2 rounded-full"
                         />
-                        {payment.name}
-                      </td>
-                      <td className="py-2 px-4 border-b text-center">
-                        {payment.duration}
-                      </td>
-                      <td className="py-2 px-4 border-b text-center">
-                        {payment.amount}
-                      </td>
-                      <td className="py-2 px-4 border-b text-center">
-                        {payment.interestRate}
+                        {payment.loan.user.email}
                       </td>
                       <td
-                        className={`py-2 px-4 border-b text-center ${getRiskColor(
-                          payment.risk
-                        )}`}
+                        className={`py-2 px-4 text-center ${
+                          payment.status_payment_investor === "pending"
+                            ? "text-red-600 py-1 px-3"
+                            : ""
+                        }`}
                       >
-                        {payment.risk.charAt(0).toUpperCase() +
-                          payment.risk.slice(1)}
+                        {payment.status_payment_investor === "pending"
+                          ? "Pendente"
+                          : payment.status_payment_investor}
+                      </td>
+                      <td className="py-2 px-4 border-b text-center">
+                        R${payment.amount}
+                      </td>
+                      <td className="py-2 px-4 border-b text-center">
+                        {payment.installment_number}
                       </td>
                     </tr>
                   ))}
@@ -295,10 +319,10 @@ const AdminPage = () => {
               <>
                 <div
                   className="flex justify-center mb-4"
-                  onClick={() => handleQRCodeClick(selectedPayment.name)}
+                  onClick={() => handleQRCodeClick(selectedPayment.payment_id)}
                 >
                   <QRCode
-                    value={`https://example.com/investments/user/${selectedPayment.name}`}
+                    value={`https://example.com/investments/user/${selectedPayment.payment_id}`}
                   />
                 </div>
                 <p className="text-center">
