@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { FaDownload } from "react-icons/fa";
 import Chart from "../../../pages/components/Chart";
 import Graphics from "../../../pages/components/Graphics";
@@ -20,20 +20,22 @@ const MyInvestments = () => {
   const [selectedInvestmentInfo, setSelectedInvestmentInfo] = useState(null);
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
   const [selectedPayment, setSelectedPayment] = useState(null);
+  const [investmentsAnalysis, setInvestmentsAnalysis] = useState([]);
 
   const [loans, setLoans] = useState([]);
 
-  const handleQRCodeClick = async (payment_id) => {
+  const handleQRCodeClick = async (loan_id) => {
     try {
-      const response = await p2pAxiosInstance.put(
-        `/loans/status/${payment_id}`,
-        {
-          status: "payed",
-        }
-      );
+      const response = await p2pAxiosInstance.put(`/loans/status/${loan_id}`, {
+        status: "payed",
+      });
       if (response.status === 200) {
         closePaymentModal();
         toast.success("Pagamento realizado com sucesso!");
+        fetchInvestmentsAnalysis();
+        fetchInvestments();
+        fetchPayments();
+        closePaymentModal();
       } else {
         closePaymentModal();
         toast.error("Erro ao realizar o pagamento. Tente novamente.");
@@ -41,6 +43,7 @@ const MyInvestments = () => {
     } catch (error) {
       closePaymentModal();
       toast.error("Erro ao realizar o pagamento. Tente novamente.");
+      console.log(error);
     }
   };
 
@@ -55,29 +58,25 @@ const MyInvestments = () => {
     setSelectedPayment(null);
   };
 
-  useEffect(() => {
-    const fetchPayments = async () => {
-      try {
-        const response = await p2pAxiosInstance.get("/payments/user/investor");
-        const data = response.data;
+  const fetchPayments = useCallback(async () => {
+    try {
+      const response = await p2pAxiosInstance.get("/payments/user/investor");
+      const data = response.data;
 
-        const groupedLoans = data.reduce((acc, loan) => {
-          const { loan_id } = loan;
-          if (!acc[loan_id]) {
-            acc[loan_id] = [];
-          }
-          acc[loan_id].push(loan);
-          return acc;
-        }, {});
+      const groupedLoans = data.reduce((acc, loan) => {
+        const { loan_id } = loan;
+        if (!acc[loan_id]) {
+          acc[loan_id] = [];
+        }
+        acc[loan_id].push(loan);
+        return acc;
+      }, {});
 
-        setLoans(groupedLoans);
-      } catch (error) {
-        console.error("Erro ao buscar os pagamentos:", error);
-        toast.error("Erro ao carregar pagamentos. Por favor, tente novamente.");
-      }
-    };
-
-    fetchPayments();
+      setLoans(groupedLoans);
+    } catch (error) {
+      console.error("Erro ao buscar os pagamentos:", error);
+      toast.error("Erro ao carregar pagamentos. Por favor, tente novamente.");
+    }
   }, []);
 
   const [expandedLoan, setExpandedLoan] = useState(null);
@@ -107,33 +106,48 @@ const MyInvestments = () => {
       setSelectedInvestmentInfo(investment);
     }
   };
-  useEffect(() => {
-    const fetchInvestments = async () => {
-      try {
-        const response = await p2pAxiosInstance.get("/contracts/user");
-        const data = response.data.map((investment) => ({
-          ...investment,
-          investment_id: investment.contract_id,
-          investor_id: investment.investor_id,
-          borrower_name: investment.borrower_user.name,
-          amount: investment.loan.amount,
-          interest_rate: investment.loan.interest_rate,
-          duration: investment.loan.duration,
-          expected_profit: 100,
-          status: investment.status,
-        }));
+  const fetchInvestments = useCallback(async () => {
+    try {
+      const response = await p2pAxiosInstance.get("/contracts/user");
+      const data = response.data.map((investment) => ({
+        ...investment,
+        investment_id: investment.contract_id,
+        investor_id: investment.investor_id,
+        borrower_name: investment.borrower_user.name,
+        amount: investment.loan.amount,
+        interest_rate: investment.loan.interest_rate,
+        duration: investment.loan.duration,
+        expected_profit: 100,
+        status: investment.status,
+      }));
 
-        setInvestments(data);
-      } catch (error) {
-        console.error("Erro ao buscar os investimentos:", error);
-        toast.error(
-          "Erro ao carregar investimentos. Por favor, tente novamente."
-        );
-      }
-    };
-
-    fetchInvestments();
+      setInvestments(data);
+    } catch (error) {
+      console.error("Erro ao buscar os investimentos:", error);
+      toast.error(
+        "Erro ao carregar investimentos. Por favor, tente novamente."
+      );
+    }
   }, []);
+
+  const fetchInvestmentsAnalysis = useCallback(async () => {
+    try {
+      const response = await p2pAxiosInstance.get("/investments/user");
+      const data = response.data;
+      setInvestmentsAnalysis(data);
+    } catch (error) {
+      console.error("Erro ao buscar os investimentos:", error);
+      toast.error(
+        "Erro ao carregar investimentos. Por favor, tente novamente."
+      );
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchInvestments();
+    fetchInvestmentsAnalysis();
+    fetchPayments();
+  }, [fetchInvestments, fetchInvestmentsAnalysis, fetchPayments]);
 
   const handleDownloadContract = (investment) => {
     setSelectedInvestment(investment);
@@ -171,7 +185,7 @@ const MyInvestments = () => {
               </tr>
             </thead>
             <tbody>
-              {investments.map((investment, index) => (
+              {investmentsAnalysis.map((investment, index) => (
                 <tr
                   key={index}
                   className="hover:bg-gray-100 transition-all duration-200 transform hover:scale-100 cursor-pointer"
@@ -180,11 +194,21 @@ const MyInvestments = () => {
                     {investment.borrower_user.name}
                   </td>
                   <td className="py-3 px-6 text-left">{`R$ ${investment.amount}`}</td>
-                  <td className="py-3 px-6 text-left">{`${investment.interest_rate}%`}</td>
-                  <td className="py-3 px-6 text-left">{investment.duration}</td>
+                  <td className="py-3 px-6 text-left">{`${investment.loan.interest_rate}%`}</td>
+                  <td className="py-3 px-6 text-left">
+                    {investment.loan.duration}
+                  </td>
                   <td className="py-3 px-6 text-left">
                     <span className="bg-green-100 text-green-600 py-1 px-3 rounded-full">
-                      {investment.loan.status}
+                      {investment.loan.status === "approved"
+                        ? "Faça o pagamento"
+                        : investment.loan.status === "done"
+                        ? "Finalizado"
+                        : investment.loan.status === "payed"
+                        ? "Em andamento"
+                        : investment.loan.status === "pending"
+                        ? "Em análise"
+                        : investment.loan.status}
                     </span>
                   </td>
                   <td className="py-3 px-6 text-left">
@@ -234,9 +258,15 @@ const MyInvestments = () => {
               </p>
               <p>
                 <strong>Status do Empréstimo:</strong>{" "}
-                {selectedInvestmentInfo.loan.status}
+                {selectedInvestmentInfo.loan.status === "approved"
+                  ? "Aguardando pagamento"
+                  : selectedInvestmentInfo.loan.status === "done"
+                  ? "Finalizado"
+                  : selectedInvestmentInfo.loan.status === "pending"
+                  ? "Em análise"
+                  : selectedInvestmentInfo.loan.status}
               </p>
-              {selectedInvestmentInfo.status === "approved" && (
+              {selectedInvestmentInfo.loan.status === "approved" && (
                 <div className="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 mt-4">
                   <p>Realize o pagamento do empréstimo!</p>
                   <button
@@ -245,7 +275,7 @@ const MyInvestments = () => {
                     }
                     className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-4"
                   >
-                    Ver Detalhes do Pagamento
+                    Relizar Pagamento
                   </button>
                 </div>
               )}
@@ -264,7 +294,7 @@ const MyInvestments = () => {
                           }
                         >
                           <QRCode
-                            value={`https://example.com/investments/user/${selectedPayment.payment_id}`}
+                            value={`https://example.com/investments/user/${selectedPayment.loan_id}`}
                           />
                         </div>
                         <p className="text-center">
@@ -301,9 +331,10 @@ const MyInvestments = () => {
               </h3>
               <p>
                 <strong>Data de Assinatura:</strong>{" "}
-                {new Date(
-                  selectedInvestmentInfo.date_signed
-                ).toLocaleDateString()}
+                {selectedInvestmentInfo.date_signed &&
+                  new Date(
+                    selectedInvestmentInfo.date_signed
+                  ).toLocaleDateString()}
               </p>
               <p>
                 <strong>Status do Contrato:</strong>{" "}
@@ -374,12 +405,21 @@ const MyInvestments = () => {
                           <td className="py-2 px-4 border-b text-center">
                             <span
                               className={`py-1 px-3 rounded-full ${
-                                installment.status === "pending"
+                                installment.status_payment_investor ===
+                                "pending"
                                   ? "bg-red-100 text-red-600"
-                                  : "bg-green-100 text-green-600"
+                                  : installment.status_payment_investor ===
+                                    "payed"
+                                  ? "bg-green-100 text-green-600"
+                                  : ""
                               }`}
                             >
-                              {installment.status}
+                              {installment.status_payment_investor === "pending"
+                                ? "Pendente"
+                                : installment.status_payment_investor ===
+                                  "payed"
+                                ? "Pago"
+                                : installment.status_payment_investor}
                             </span>
                           </td>
                           <td className="py-2 px-4 border-b text-center">
@@ -417,7 +457,13 @@ const MyInvestments = () => {
               >
                 <td className="py-2 px-4 border-b text-center">
                   <span className="bg-green-100 text-green-600 py-1 px-3 rounded-full">
-                    {investment.status}
+                    {investment.status === "active"
+                      ? "Ativo"
+                      : investment.status === "done"
+                      ? "Finalizado"
+                      : investment.status === "pending"
+                      ? "Em análise"
+                      : investment.status}
                   </span>
                 </td>
                 <td className="py-2 px-4 border-b text-center">

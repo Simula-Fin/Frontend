@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useCallback } from "react";
 import { useState } from "react";
 import { FaEllipsisV, FaCheck, FaTimes } from "react-icons/fa";
 import { p2pAxiosInstance } from "../../utils/AxiosConfig";
@@ -21,67 +21,69 @@ const AdminPage = () => {
   const [pendingPayments, setPendingPayments] = useState([
     {
       photo: perfil2,
-      name: "Investidor 1",
+      name: "João",
       status: "approved",
     },
     {
       photo: perfil3,
-      name: "Investidor 2",
+      name: "Marcelo",
       status: "approved",
     },
     {
       photo: perfil4,
-      name: "Investidor 3",
+      name: "Caique",
       status: "approved",
     },
   ]);
 
-  useEffect(() => {
+  const fetchOpportunities = useCallback(async () => {
     const pictures = [perfil2, perfil3, perfil4, perfil5];
-    const fetchOpportunities = async () => {
-      try {
-        const response = await p2pAxiosInstance.get("/investments");
-        const data = response.data.map((opportunity, index) => ({
-          ...opportunity,
-          risk: getRiskLevel(opportunity.loan.risk_score),
-          picture: pictures[index % pictures.length],
-        }));
-        setOpportunities(data);
-      } catch (error) {
-        console.error("Erro ao buscar oportunidades de empréstimo:", error);
-        toast.error(
-          "Erro ao carregar oportunidades de empréstimo. Por favor, tente novamente."
-        );
-      }
-    };
-
-    const fetchInvestPaymentsPending = async () => {
-      try {
-        const response = await p2pAxiosInstance.get(
-          "/payments/pending-payments"
-        );
-        const data = response.data.map((payment, index) => ({
-          ...payment,
-          picture: pictures[index % pictures.length],
-        }));
-        setInvestPaymentsPending(data);
-      } catch (error) {
-        console.error("Erro ao buscar investimentos pendentes:", error);
-        toast.error(
-          "Erro ao carregar investimentos pendentes. Por favor, tente novamente."
-        );
-      }
-    };
-
-    fetchOpportunities();
-    fetchInvestPaymentsPending();
+    try {
+      const response = await p2pAxiosInstance.get("/investments");
+      const data = response.data.map((opportunity, index) => ({
+        ...opportunity,
+        risk: getRiskLevel(opportunity.loan.risk_score),
+        picture: pictures[index % pictures.length],
+      }));
+      setOpportunities(data);
+    } catch (error) {
+      console.error("Erro ao buscar oportunidades de empréstimo:", error);
+      toast.error(
+        "Erro ao carregar oportunidades de empréstimo. Por favor, tente novamente."
+      );
+    }
   }, []);
 
+  const fetchInvestPaymentsPending = useCallback(async () => {
+    const pictures = [perfil2, perfil3, perfil4, perfil5];
+    try {
+      const response = await p2pAxiosInstance.get("/payments/pending-payments");
+      const data = response.data.map((payment, index) => ({
+        ...payment,
+        picture: pictures[index % pictures.length],
+      }));
+      setInvestPaymentsPending(data);
+    } catch (error) {
+      console.error("Erro ao buscar investimentos pendentes:", error);
+      toast.error(
+        "Erro ao carregar investimentos pendentes. Por favor, tente novamente."
+      );
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchOpportunities();
+    fetchInvestPaymentsPending();
+  }, [fetchInvestPaymentsPending, fetchOpportunities]);
+
   const handleApprove = async (opportunity) => {
-    // await p2pAxiosInstance.post(`/loans/status/${opportunity.investment_id}`, {
-    //   status: "approved",
-    // });
+    await p2pAxiosInstance.put(`/loans/status/${opportunity.loan.loan_id}`, {
+      status: "approved",
+    });
     toast.success("Investimento aprovado com sucesso!");
+    closePaymentModal();
+    fetchOpportunities();
+    fetchInvestPaymentsPending();
   };
 
   const handleReject = (opportunity) => {
@@ -141,6 +143,8 @@ const AdminPage = () => {
       );
       if (response.status === 200) {
         toast.success("Pagamento realizado com sucesso!");
+        fetchInvestPaymentsPending();
+        fetchOpportunities();
       } else {
         toast.error("Erro ao realizar o pagamento. Tente novamente.");
       }
@@ -187,39 +191,49 @@ const AdminPage = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {investPaymentsPending.map((payment, index) => (
-                    <tr
-                      key={index}
-                      onClick={() => handleRowClickPayments(payment)}
-                      className="hover:bg-gray-100 transition-all duration-200 transform hover:scale-100 cursor-pointer"
-                    >
-                      <td className="py-2 px-4 border-b flex items-center">
-                        <img
-                          src={payment.picture}
-                          alt={payment.loan.user.name}
-                          className="h-10 w-10 mr-2 rounded-full"
-                        />
-                        {payment.loan.user.email}
-                      </td>
-                      <td
-                        className={`py-2 px-4 text-center ${
-                          payment.status_payment_investor === "pending"
-                            ? "text-red-600 py-1 px-3"
-                            : ""
-                        }`}
+                  {investPaymentsPending
+                    .filter(
+                      (payment) => payment.status_payment_investor === "pending"
+                    )
+                    .map((payment, index) => (
+                      <tr
+                        key={index}
+                        onClick={() => handleRowClickPayments(payment)}
+                        className="hover:bg-gray-100 transition-all duration-200 transform hover:scale-100 cursor-pointer"
                       >
-                        {payment.status_payment_investor === "pending"
-                          ? "Pendente"
-                          : payment.status_payment_investor}
-                      </td>
-                      <td className="py-2 px-4 border-b text-center">
-                        R${payment.amount}
-                      </td>
-                      <td className="py-2 px-4 border-b text-center">
-                        {payment.installment_number}
-                      </td>
-                    </tr>
-                  ))}
+                        <td className="py-2 px-4 border-b flex items-center">
+                          <img
+                            src={payment.picture}
+                            alt={payment.loan.user.name}
+                            className="h-10 w-10 mr-2 rounded-full"
+                          />
+                          {payment.loan.user.email}
+                        </td>
+                        <td className="py-2 px-4 border-b text-center">
+                          <span
+                            className={`py-1 px-3 rounded-full ${
+                              payment.status_payment_investor === "pending"
+                                ? "bg-red-100 text-red-600"
+                                : payment.status_payment_investor === "payed"
+                                ? "bg-green-100 text-green-600"
+                                : ""
+                            }`}
+                          >
+                            {payment.status_payment_investor === "pending"
+                              ? "Pendente"
+                              : payment.status_payment_investor === "payed"
+                              ? "Pago"
+                              : payment.status_payment_investor}
+                          </span>
+                        </td>
+                        <td className="py-2 px-4 border-b text-center">
+                          R${payment.amount}
+                        </td>
+                        <td className="py-2 px-4 border-b text-center">
+                          {payment.installment_number}
+                        </td>
+                      </tr>
+                    ))}
                 </tbody>
               </table>
             </div>
@@ -328,57 +342,59 @@ const AdminPage = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {opportunities.map((opportunity, index) => (
-                    <tr
-                      key={index}
-                      onClick={() => handleRowClick(opportunity)}
-                      className="hover:bg-gray-100 transition-all duration-200 transform hover:scale-100 cursor-pointer"
-                    >
-                      <td className="py-2 px-4 border-b text-left">
-                        {opportunity.investor.email}
-                      </td>
-                      <td className="py-2 px-4 border-b text-left">
-                        {opportunity.loan.user.email}
-                      </td>
-                      <td className="py-2 px-4 border-b text-center">
-                        {opportunity.loan.duration}
-                      </td>
-                      <td className="py-2 px-4 border-b text-center">
-                        R${opportunity.loan.amount}
-                      </td>
-                      <td className="py-2 px-4 border-b text-center">
-                        {opportunity.loan.interest_rate}%
-                      </td>
-                      <td
-                        className={`py-2 px-4 border-b text-center ${getRiskColor(
-                          opportunity.loan.risk_score
-                        )}`}
+                  {opportunities
+                    .filter((opportunity) => opportunity.status === "solicited")
+                    .map((opportunity, index) => (
+                      <tr
+                        key={index}
+                        onClick={() => handleRowClick(opportunity)}
+                        className="hover:bg-gray-100 transition-all duration-200 transform hover:scale-100 cursor-pointer"
                       >
-                        {opportunity.risk.charAt(0).toUpperCase() +
-                          opportunity.risk.slice(1)}
-                      </td>
-                      <td className="py-2 px-4 border-b text-center">
-                        <button
-                          className="mr-2 bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleApprove(opportunity);
-                          }}
+                        <td className="py-2 px-4 border-b text-left">
+                          {opportunity.investor.email}
+                        </td>
+                        <td className="py-2 px-4 border-b text-left">
+                          {opportunity.loan.user.email}
+                        </td>
+                        <td className="py-2 px-4 border-b text-center">
+                          {opportunity.loan.duration}
+                        </td>
+                        <td className="py-2 px-4 border-b text-center">
+                          R${opportunity.loan.amount}
+                        </td>
+                        <td className="py-2 px-4 border-b text-center">
+                          {opportunity.loan.interest_rate}%
+                        </td>
+                        <td
+                          className={`py-2 px-4 border-b text-center ${getRiskColor(
+                            opportunity.loan.risk_score
+                          )}`}
                         >
-                          <FaCheck className="inline-block" /> Aprovar
-                        </button>
-                        <button
-                          className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleReject(opportunity);
-                          }}
-                        >
-                          <FaTimes className="inline-block" /> Recusar
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
+                          {opportunity.risk.charAt(0).toUpperCase() +
+                            opportunity.risk.slice(1)}
+                        </td>
+                        <td className="py-2 px-4 border-b text-center">
+                          <button
+                            className="mr-2 bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleApprove(opportunity);
+                            }}
+                          >
+                            <FaCheck className="inline-block" /> Aprovar
+                          </button>
+                          <button
+                            className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleReject(opportunity);
+                            }}
+                          >
+                            <FaTimes className="inline-block" /> Recusar
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
                 </tbody>
               </table>
             </div>
