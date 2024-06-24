@@ -5,3 +5,19 @@
 .text-custom-gray {
   color: #9CA3AF;
 }
+
+.password-toggle-container {
+  position: absolute;
+  top: 50%;
+  right: 1rem; /* Ajuste o espaçamento à direita conforme necessário */
+  transform: translateY(20%); /* Centraliza verticalmente */
+}
+
+.eye-icon {
+  font-size: 1.15rem;
+  color: #1d711d; /* Cor verde claro (LightGreen) */
+}
+
+.input-error {
+  border-width: 2px; /* Aumenta a largura da borda para 2px */
+}

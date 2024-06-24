@@ -8,16 +8,33 @@ import { FaEye, FaEyeSlash } from 'react-icons/fa';
 
 
 const Login = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const { authLogin, isAuthenticated, setUserLogin } = useAuth();
-  const [showPassword, setShowPassword] = useState(false);
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const { authLogin, isAuthenticated, setUserLogin } = useAuth();
+    const [showPassword, setShowPassword] = useState(false);
+    
+    // Movendo estado e função de validação para dentro do componente:
+    const [emailError, setEmailError] = useState(false);
+
+    const validateEmail = (email) => {
+        // Expressão regular para validação básica de email
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return emailRegex.test(email);
+    };
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
   };
   const handleLogin = (e) => {
     e.preventDefault();
+  
+    // Valida o email
+    if (!validateEmail(email)) {
+      setEmailError(true); // Define o erro como verdadeiro
+      return; // Impede o login se o email for inválido
+    }
+  
+    setEmailError(false); // Limpa o erro se o email for válido
     login(email, password);
   };
 
@@ -63,20 +80,30 @@ const Login = () => {
             </h2>
           </div>
           <form onSubmit={handleLogin} className="mt-8 space-y-6">
-            <div className="rounded-md shadow-sm space-y-4">
-              <div>
-                <label htmlFor="email-address" className="block text-white text-sm font-medium mb-2">Login</label>
-                <input
-                  id="email-address"
-                  name="email"
-                  type="email"
-                  autoComplete="email"
-                  required
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="appearance-none rounded-xl relative block w-full px-3 py-4 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:border-green-400  sm:text-sm my-2"
-                />
-              </div>
+          <div className="rounded-md shadow-sm space-y-4">
+            <div>
+              <label htmlFor="email-address" className="block text-white text-sm font-medium mb-2">
+                Login
+              </label>
+              <input
+                id="email-address"
+                name="email"
+                type="email"
+                autoComplete="email"
+                required
+                value={email}
+                onChange={(e) => {
+                  setEmail(e.target.value);
+                  setEmailError(!validateEmail(e.target.value));
+                }}
+                className={`appearance-none rounded-xl relative block w-full px-3 py-4 border ${
+                  emailError ? 'border-red-500 input-error' : 'border-gray-300'
+                } placeholder-gray-500 text-gray-900 focus:outline-none focus:border-red-500 sm:text-sm my-2`}
+              />
+              {emailError && (
+                <p className="text-red-500 text-sm">Não está no formato correto</p>
+              )}
+            </div>
               <div className="relative">
                 <label htmlFor="password" className="block text-white text-sm font-medium mb-2">Password</label>
                 <input
@@ -89,13 +116,17 @@ const Login = () => {
                   onChange={(e) => setPassword(e.target.value)}
                   className="appearance-none rounded-xl relative block w-full px-3 py-4 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:border-green-400 sm:text-sm my-2"
                 />
-                <div className="absolute inset-y-0 right-0 pr-3 flex items-center text-sm leading-5 h-full">
+                <div className="password-toggle-container">
                   <button
                     type="button"
                     onClick={togglePasswordVisibility}
                     className="focus:outline-none"
                   >
-                    {showPassword ? <FaEyeSlash className="text-gray-500" /> : <FaEye className="text-gray-500" />}
+                    {showPassword ? (
+                      <FaEyeSlash className="eye-icon text-gray-500" /> 
+                    ) : (
+                      <FaEye className="eye-icon text-gray-500" />
+                    )}
                   </button>
                 </div>
               </div>
