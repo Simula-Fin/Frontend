@@ -504,7 +504,6 @@ const MyLoans = () => {
           </tbody>
         </table>
       </div>
-      <Chart />
 
       <Modal
         isOpen={isModalOpen}
