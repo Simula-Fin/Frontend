@@ -25,16 +25,42 @@ const MyInvestments = () => {
 
   const [loans, setLoans] = useState([]);
 
-  const stocks = async (email, password) => {
-    try {
-      const response = await stockAxiosInstance.get('/api/stocks/stock-summary/{BBAS3}',);
-      console.log('Response ação: ', response.data);
+  // const stocks = async (email, password) => {
+  //   try {
+  //     const response = await stockAxiosInstance.get('/api/stocks/stock-summary/{BBAS3}',);
+  //     console.log('Response ação: ', response.data);
     
 
+  //   } catch (error) {
+  //     console.error('Erro ao fazer login:', error);
+  //   }
+  // };
+
+  const fetchStockSummary = async (ticker) => {
+    const url = `https://stock-api-f7tht.ondigitalocean.app/api/stocks/stock-summary/${ticker}`;
+  
+    try {
+      const response = await fetch(url, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        redirect: "follow"
+      });
+  
+      if (!response.ok) {
+        throw new Error(`Erro na requisição: ${response.statusText}`);
+      }
+  
+      const data = await response.json();
+      console.log('Response ação: ', data);
+  
     } catch (error) {
-      console.error('Erro ao fazer login:', error);
+      console.error('Erro ao buscar os dados da ação:', error);
     }
   };
+  
+  fetchStockSummary('BBAS3');
 
   const mockStocks = [
     {
@@ -278,7 +304,7 @@ const MyInvestments = () => {
     fetchInvestments();
     fetchInvestmentsAnalysis();
     fetchPayments();
-    stocks();
+    // stocks();
   }, [fetchInvestments, fetchInvestmentsAnalysis, fetchPayments]);
 
   const handleDownloadContract = (investment) => {
