@@ -4,8 +4,7 @@ import Chart from "../../../pages/components/Chart";
 import Graphics from "../../../pages/components/Graphics";
 import { toast } from "react-toastify";
 import Modal from "react-modal";
-import { StockSummaryAccordion } from "../../components/StockAccordion";
-import { p2pAxiosInstance, stockAxiosInstance } from "../../../utils/AxiosConfig";
+import { p2pAxiosInstance } from "../../../utils/AxiosConfig";
 import {
   createMockContract,
   generatePDF,

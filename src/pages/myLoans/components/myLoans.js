@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { FaDownload } from "react-icons/fa";
-import Chart from "../../../pages/components/Chart";
 import Graphics from "../../../pages/components/Graphics";
 import { toast } from "react-toastify";
 import { p2pAxiosInstance } from "../../../utils/AxiosConfig";
