@@ -8,7 +8,7 @@ import Graphics from "../../../pages/components/Graphics";
 import Chart from "../../../pages/components/Chart";
 import { toast } from "react-toastify";
 import { StockSummaryAccordion } from "../../components/StockAccordion";
-import { p2pAxiosInstance} from "../../../utils/AxiosConfig";
+import { p2pAxiosInstance } from "../../../utils/AxiosConfig";
 import ReactLoading from 'react-loading';
 
 const LoanOpportunities = () => {
@@ -19,8 +19,28 @@ const LoanOpportunities = () => {
   const [stockSummaries, setStockSummaries] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const tickers = ['BBAS3', 'PETR4', 'VALE3', 'ITUB4', 'ABEV3'];
+  const mockStockData = [{
+    "ticker": "AAPL",
+    "currentPrice": 145.32,
+    "companyName": "Apple Inc.",
+    "companyId": 1,
+    "freeFloat": 84.12,
+    "tagAlong": 100,
+    "avgDailyLiquidity": 30000000,
+    "categorie": "Technology",
+    "variationOneDay": 1.24,
+    "variationOneMonth": 5.67,
+    "variationTwelveMonths": 28.34,
+    "allPrices": [
+      { "value": 145.32, "priceDate": "2024-06-01" },
+      { "value": 144.75, "priceDate": "2024-05-31" },
+      { "value": 143.65, "priceDate": "2024-05-30" },
+      { "value": 142.85, "priceDate": "2024-05-29" },
+      { "value": 141.95, "priceDate": "2024-05-28" }
+    ]
+  }];
 
-  
+
   const fetchMultipleStockSummaries = async (tickers) => {
     const summaries = [];
 
@@ -35,17 +55,23 @@ const LoanOpportunities = () => {
         });
 
         if (!response.ok) {
+          setStockSummaries(mockStockData);
           throw new Error(`Erro na requisição para ${ticker}: ${response.statusText}`);
         }
 
-        const data = await response.json();
-        summaries.push(data);
+        let data;
+        try {
+          data = await response.json();
+        } catch (jsonError) {
+          throw new Error(`Erro ao processar JSON da ação ${ticker}: ${jsonError.message}`);
+        }
 
+        summaries.push(data);
       } catch (error) {
         console.error(`Erro ao buscar os dados da ação ${ticker}:`, error);
-        summaries.push({ ticker, error: error.message });
       }
     }
+
 
     return summaries;
   };
@@ -54,18 +80,23 @@ const LoanOpportunities = () => {
     const fetchData = async () => {
       try {
         const data = await fetchMultipleStockSummaries(tickers);
-        setStockSummaries(data);
+        console.log('data', data)
+        if (data.length > 0) {
+          setStockSummaries(data);
+        } else {
+          setStockSummaries(mockStockData);
+        }
       } catch (error) {
         console.error('Erro ao buscar os dados das ações:', error);
       } finally {
-        setIsLoading(false); 
+        setIsLoading(false);
       }
     };
 
     fetchData();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); 
-  
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
 
   const fetchOpportunities = useCallback(async () => {
     const pictures = [perfil2, perfil3, perfil4, perfil5];
@@ -142,8 +173,8 @@ const LoanOpportunities = () => {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-full">
-          <ReactLoading type="spin" color="#2F855A" height={50} width={50} />
-        </div>
+        <ReactLoading type="spin" color="#2F855A" height={50} width={50} />
+      </div>
     );
   }
 
@@ -201,15 +232,14 @@ const LoanOpportunities = () => {
                     <span
                       className={`py-1 px-3 rounded-full ${getRiskColor(
                         opportunity.risk
-                      )} ${
-                        opportunity.risk === "baixo"
+                      )} ${opportunity.risk === "baixo"
                           ? "bg-green-100"
                           : opportunity.risk === "médio"
-                          ? "bg-yellow-100"
-                          : opportunity.risk === "alto"
-                          ? "bg-red-100"
-                          : ""
-                      }`}
+                            ? "bg-yellow-100"
+                            : opportunity.risk === "alto"
+                              ? "bg-red-100"
+                              : ""
+                        }`}
                     >
                       {opportunity.risk.charAt(0).toUpperCase() +
                         opportunity.risk.slice(1)}
@@ -258,9 +288,8 @@ const LoanOpportunities = () => {
               </button>
               <button
                 onClick={confirmInvestment}
-                className={`bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 ${
-                  !isTermsAccepted ? "opacity-50 cursor-not-allowed" : ""
-                }`}
+                className={`bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 ${!isTermsAccepted ? "opacity-50 cursor-not-allowed" : ""
+                  }`}
                 disabled={!isTermsAccepted}
               >
                 Confirmar
@@ -272,9 +301,13 @@ const LoanOpportunities = () => {
       <Chart />
       <div className="w-full mt-[22px]">
         <h1 className="text-2xl font-bold mb-6">Ações em destaque</h1>
-        { stockSummaries.map(stock => (
-          <StockSummaryAccordion key={stock.companyId} stockData={stock} />
-        ))}
+        {Array.isArray(stockSummaries) && stockSummaries.length > 0 ? (
+          stockSummaries.map(stock => (
+            <StockSummaryAccordion key={stock.companyId} stockData={stock} />
+          ))
+        ) : (
+          <p>Loading...</p> // ou algum outro placeholder de carregamento ou mensagem
+        )}
       </div>
     </div>
   );

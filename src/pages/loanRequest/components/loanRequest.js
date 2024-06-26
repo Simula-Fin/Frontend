@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import Chart from "../../../pages/components/Chart";
 import Graphics from "../../../pages/components/Graphics";
 import { p2pAxiosInstance } from '../../../utils/AxiosConfig';
 import { toast } from 'react-toastify';
@@ -180,9 +179,6 @@ const LoanRequest = () => {
             </button>
           </div>
         </form>
-      </div>
-      <div className="bg-white p-6 rounded-lg shadow-md mt-4">
-        <Chart />
       </div>
       {isModalOpen && (
         <div className="fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center">
