@@ -227,7 +227,9 @@ const AdminPage = () => {
                           </span>
                         </td>
                         <td className="py-2 px-4 border-b text-center">
-                          R${payment.amount}
+                          {`${parseFloat(payment.investor_profit ?? 0).toFixed(
+                            2
+                          )}R$`}
                         </td>
                         <td className="py-2 px-4 border-b text-center">
                           {payment.installment_number}
@@ -343,7 +345,9 @@ const AdminPage = () => {
                 </thead>
                 <tbody>
                   {opportunities
-                    .filter((opportunity) => opportunity.status === "solicited")
+                    .filter(
+                      (opportunity) => opportunity.loan.status === "solicited"
+                    )
                     .map((opportunity, index) => (
                       <tr
                         key={index}

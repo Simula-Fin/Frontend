@@ -400,7 +400,7 @@ const MyInvestments = () => {
                             {installment.installment_number}
                           </td>
                           <td className="py-2 px-4 border-b text-center">
-                            R${installment.amount}
+                            R${installment.investor_profit}
                           </td>
                           <td className="py-2 px-4 border-b text-center">
                             <span
