@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import Graphics from "../../../pages/components/Graphics";
 import { p2pAxiosInstance } from '../../../utils/AxiosConfig';
 import { toast } from 'react-toastify';
+import Chat from "../../components/Chat";
 
 const LoanRequest = () => {
   const [loanAmount, setLoanAmount] = useState("");
@@ -221,6 +222,7 @@ const LoanRequest = () => {
           </div>
         </div>
       )}
+      <Chat />
     </>
   );
 };

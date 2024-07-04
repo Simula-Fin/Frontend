@@ -10,6 +10,7 @@ import { toast } from "react-toastify";
 import { StockSummaryAccordion } from "../../components/StockAccordion";
 import { p2pAxiosInstance } from "../../../utils/AxiosConfig";
 import ReactLoading from "react-loading";
+import Chat from "../../components/Chat";
 
 const LoanOpportunities = () => {
   const [opportunities, setOpportunities] = useState([]);
@@ -309,6 +310,7 @@ const LoanOpportunities = () => {
           </div>
         </div>
       )}
+      <Chat />
       <Chart />
       <div className="w-full mt-[22px]">
         <h1 className="text-2xl font-bold mb-6">Ações em destaque</h1>

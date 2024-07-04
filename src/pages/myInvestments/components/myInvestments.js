@@ -9,6 +9,7 @@ import {
   generatePDF,
 } from "../../../utils/generateContract";
 import QRCode from "react-qr-code";
+import Chat from "../../components/Chat";
 
 Modal.setAppElement("#root");
 
@@ -515,6 +516,7 @@ const MyInvestments = () => {
           </button>
         </div>
       </Modal>
+      <Chat />
     </div>
   );
 };
