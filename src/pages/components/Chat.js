@@ -14,16 +14,15 @@ const Chat = () => {
             setStatus('Please enter a message.');
             return;
         }
-
+    
         setStatus('Loading...');
         setMessage('');
-
-        fetch("https://api.openai.com/v1/completions", {
+    
+        fetch("https://peer-to-peer-loan-service-production.up.railway.app/bot", {
             method: 'POST',
             headers: {
                 Accept: 'application/json',
                 'Content-Type': 'application/json',
-                Authorization: `Bearer ${apiKey}`
             },
             body: JSON.stringify({
                 model: 'gpt-3.5-turbo-instruct',
@@ -32,18 +31,22 @@ const Chat = () => {
                 temperature: 0.5
             })
         })
-            .then(response => response.json())
-            .then(response => {
-                const r = response.choices[0].text;
+        .then(response => response.json())
+        .then(response => {
+            if (response && response.response && response.response.choices && response.response.choices.length > 0) {
+                const r = response.response.choices[0].text;
                 setStatus('');
                 showHistory(message, r);
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                setStatus('Error, please try again later.');
-            });
+            } else {
+                setStatus('Unexpected response format.');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            setStatus('Error, please try again later.');
+        });
     };
-
+    
     const showHistory = (message, response) => {
         setHistory(prevHistory => [
             ...prevHistory,

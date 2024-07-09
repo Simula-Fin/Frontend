@@ -19,47 +19,33 @@ const Chart = () => {
     try {
       let response;
       let data;
-      if (mode === 'C') {
-        response = await fetch('/rsa/encrypt', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            message,
-            public_key
-          })
-        });
-      } else {
-        response = await fetch('/rsa/decrypt', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            message,
-            private_key
-          })
-        });
-      }
+      const url = 'https://peer-to-peer-loan-service-production.up.railway.app/rsa';
+      const requestBody = mode === 'C' ? { message, public_key } : { message, private_key };
 
+      response = await fetch(`${url}/${mode === 'C' ? 'encrypt' : 'decrypt'}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(requestBody)
+      });
+      
       if (!response.ok) {
         throw new Error('Network response was not ok');
       }
 
       data = await response.json();
-
+      console.log(data.response);
       if (mode === 'C') {
-        setResult(data.encrypted_message);
+        setResult(data.response.encrypted_message);
       } else {
-        setResult(data.decrypted_message);
+        setResult(data.response.decrypted_message);
       }
     } catch (error) {
       console.error('Error during API request:', error);
       setResult('Error during API request');
     }
   };
-
 
   return (
     <>
