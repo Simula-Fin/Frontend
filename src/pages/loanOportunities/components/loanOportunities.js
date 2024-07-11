@@ -20,59 +20,17 @@ const LoanOpportunities = () => {
   const [stockSummaries, setStockSummaries] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const tickers = ["BBAS3", "PETR4", "VALE3", "ITUB4", "ABEV3"];
-  const mockStockData = [
-    {
-      ticker: "AAPL",
-      currentPrice: 145.32,
-      companyName: "Apple Inc.",
-      companyId: 1,
-      freeFloat: 84.12,
-      tagAlong: 100,
-      avgDailyLiquidity: 30000000,
-      categorie: "Technology",
-      variationOneDay: 1.24,
-      variationOneMonth: 5.67,
-      variationTwelveMonths: 28.34,
-      allPrices: [
-        { value: 145.32, priceDate: "2024-06-01" },
-        { value: 144.75, priceDate: "2024-05-31" },
-        { value: 143.65, priceDate: "2024-05-30" },
-        { value: 142.85, priceDate: "2024-05-29" },
-        { value: 141.95, priceDate: "2024-05-28" },
-      ],
-    },
-  ];
 
   const fetchMultipleStockSummaries = async (tickers) => {
     const summaries = [];
 
     for (const ticker of tickers) {
       try {
-        const url = `/stock-api/api/stocks/stock-summary/${ticker}`;
-        const response = await fetch(url, {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        });
 
-        if (!response.ok) {
-          setStockSummaries(mockStockData);
-          throw new Error(
-            `Erro na requisição para ${ticker}: ${response.statusText}`
-          );
-        }
+        const response = await p2pAxiosInstance.get(`/stocks/stock-summary/${ticker}`);
 
-        let data;
-        try {
-          data = await response.json();
-        } catch (jsonError) {
-          throw new Error(
-            `Erro ao processar JSON da ação ${ticker}: ${jsonError.message}`
-          );
-        }
+        summaries.push(response.data.response);
 
-        summaries.push(data);
       } catch (error) {
         console.error(`Erro ao buscar os dados da ação ${ticker}:`, error);
       }
@@ -85,12 +43,7 @@ const LoanOpportunities = () => {
     const fetchData = async () => {
       try {
         const data = await fetchMultipleStockSummaries(tickers);
-        console.log("data", data);
-        if (data.length > 0) {
-          setStockSummaries(data);
-        } else {
-          setStockSummaries(mockStockData);
-        }
+        setStockSummaries(data);
       } catch (error) {
         console.error("Erro ao buscar os dados das ações:", error);
       } finally {
@@ -99,7 +52,6 @@ const LoanOpportunities = () => {
     };
 
     fetchData();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const fetchOpportunities = useCallback(async () => {
@@ -242,15 +194,14 @@ const LoanOpportunities = () => {
                     <span
                       className={`py-1 px-3 rounded-full ${getRiskColor(
                         opportunity.risk
-                      )} ${
-                        opportunity.risk === "baixo"
-                          ? "bg-green-100"
-                          : opportunity.risk === "médio"
+                      )} ${opportunity.risk === "baixo"
+                        ? "bg-green-100"
+                        : opportunity.risk === "médio"
                           ? "bg-yellow-100"
                           : opportunity.risk === "alto"
-                          ? "bg-red-100"
-                          : ""
-                      }`}
+                            ? "bg-red-100"
+                            : ""
+                        }`}
                     >
                       {opportunity.risk.charAt(0).toUpperCase() +
                         opportunity.risk.slice(1)}
@@ -299,9 +250,8 @@ const LoanOpportunities = () => {
               </button>
               <button
                 onClick={confirmInvestment}
-                className={`bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 ${
-                  !isTermsAccepted ? "opacity-50 cursor-not-allowed" : ""
-                }`}
+                className={`bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 ${!isTermsAccepted ? "opacity-50 cursor-not-allowed" : ""
+                  }`}
                 disabled={!isTermsAccepted}
               >
                 Confirmar
@@ -319,7 +269,7 @@ const LoanOpportunities = () => {
             <StockSummaryAccordion key={stock.companyId} stockData={stock} />
           ))
         ) : (
-          <p>Loading...</p> // ou algum outro placeholder de carregamento ou mensagem
+          <p>Não foi possível carregar as ações, tente novamente mais tarde !</p> // ou algum outro placeholder de carregamento ou mensagem
         )}
       </div>
     </div>
